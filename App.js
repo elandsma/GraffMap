@@ -9,6 +9,8 @@ import AddImageScreen from './screens/AddImageScreen';
 import TakePhotoScreen from './screens/TakePhotoScreen';
 import MapScreen from './screens/MapScreen';
 import AboutScreen from './screens/AboutScreen';
+import RandomImageScreen from './screens/RandomImageScreen';
+
 import { Header } from './components/Header';
 
 // import firebase from "firebase";
@@ -51,9 +53,6 @@ function LogoTitle(){
         </TouchableOpacity>
     </View>
 </View>
-
-
-
   );
 }
 
@@ -62,7 +61,6 @@ export default function App() {
 
   return (
     <>
-
     <NavigationContainer style={styles.container}>
       <Stack.Navigator screenOptions={globalScreenOptions} >
         <Stack.Screen name="Home" component={HomeScreen}
@@ -71,6 +69,8 @@ export default function App() {
         <Stack.Screen name="Add Image" component={AddImageScreen}/>
         <Stack.Screen name="Take Photo" component={TakePhotoScreen}/>
         <Stack.Screen name="Map" component={MapScreen}/>
+        <Stack.Screen name="Random" component={RandomImageScreen}/>
+
 
       </Stack.Navigator>
     </NavigationContainer>

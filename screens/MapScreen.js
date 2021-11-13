@@ -79,7 +79,12 @@ const MapScreen = ( { navigation } )=>{
       //maybe pass the current area of map in as a dependency, so when the map changes so do the markers? 
       // as opposed to creating markers for every datapoint regardless of our current view
 
+      if(Platform.OS != 'ios' && Platform.OS != 'android'){
+        return(
+          <Text>Currently, map view is only available on mobile devices. Your platform is {Platform.OS} </Text>
+        )
 
+      }
 
 
     if (initialMapLocation==null){
