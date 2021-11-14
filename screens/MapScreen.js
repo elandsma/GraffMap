@@ -21,7 +21,7 @@ const MapScreen = ( { navigation } )=>{
             latitudeDelta: 0.0922,
             longitudeDelta: 0.0421, 
           })
-          // todo: make this random location that has data
+          // todo: make this random location that has data?
           return;
         }
         let location = await Location.getCurrentPositionAsync({});

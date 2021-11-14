@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "graffmap",
+    "name": "GraffMap",
     "slug": "graffmap",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -31,6 +31,6 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "description": ""
+    "description": "Graff Map enables viewing of user-added snapshots of street art encountered in the wild.",
   }
 }
