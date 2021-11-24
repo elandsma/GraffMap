@@ -21,7 +21,6 @@ const globalScreenOptions ={
   headerStyle: { backgroundColor: "#2C6BED"},   //header bgcolor
   headerTitleStyle: {color: "white"},           //header text color
   headerTintColor: "white",                     //header icon color 
-  
 }
 
 function LogoTitle(){
@@ -56,7 +55,6 @@ function LogoTitle(){
   );
 }
 
-
 export default function App() {
 
   return (
@@ -67,10 +65,8 @@ export default function App() {
           options={{ headerTitle: (props) => <LogoTitle {...props}/>}} />
         <Stack.Screen name="About" component={AboutScreen}/>
         <Stack.Screen name="Add Image" component={AddImageScreen}/>
-        <Stack.Screen name="Take Photo" component={TakePhotoScreen}/>
         <Stack.Screen name="Map" component={MapScreen}/>
         <Stack.Screen name="Random" component={RandomImageScreen}/>
-
 
       </Stack.Navigator>
     </NavigationContainer>

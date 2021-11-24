@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, Text, View} from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View} from 'react-native'
 import {Button, Input, Image} from "react-native-elements";
 
 const HomeScreen = ( {navigation })=>{
@@ -7,12 +7,19 @@ const HomeScreen = ( {navigation })=>{
     return(
         <>
         <View style={styles.container}>    
-            <Text>Welcome to GraffMap</Text>
-            <Button onPress={()=> navigation.navigate('Map')} containerStyle={styles.linkButton} type="outline" title="Map"/>
-            <Button onPress={()=> navigation.navigate('Add Image')} containerStyle={styles.linkButton} type="outline" title="Add Image"/>
-            <Button onPress={()=> navigation.navigate('About')} containerStyle={styles.linkButton} type="outline" title="About"/>
-            <Button onPress={()=> navigation.navigate('Random')} containerStyle={styles.linkButton} type="outline" title="Random Graff"/>
-
+            <Text style={{fontSize: 25}}>Welcome to GraffMap{"\n"}</Text>
+            <TouchableOpacity style={styles.homeNavButtonTouchable} onPress={()=> navigation.navigate('Map')} >
+                <Text style={styles.homeNavButtonText}> Map</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.homeNavButtonTouchable} onPress={()=> navigation.navigate('Add Image')} >
+                <Text style={styles.homeNavButtonText}> Add Image</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.homeNavButtonTouchable} onPress={()=> navigation.navigate('About')} >
+                <Text style={styles.homeNavButtonText}> About</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.homeNavButtonTouchable} onPress={()=> navigation.navigate('Random')} >
+                <Text style={styles.homeNavButtonText}> Random Graff</Text>
+            </TouchableOpacity>
         </View>
         </>        
     )
@@ -27,10 +34,23 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         padding: 10,
     },
-    linkButton:{
-        paddingTop: 10,
-        marginTop: 10,
+    homeNavButtonTouchable:{
         width: 200,
+        borderRadius: 10,
+        backgroundColor: '#2C6BED',
+        // #14274e
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: 48,
+        marginTop: 10,
+        marginBottom: 10
+    },
+    homeNavButtonText:{
+        color: '#fff',
+        fontWeight: 'bold',
+        textAlignVertical: 'center',
+        fontSize: 18
     }
 });
 
