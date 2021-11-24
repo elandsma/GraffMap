@@ -1,8 +1,9 @@
 import React, {useState, useEffect} from 'react'
-import { StyleSheet, Text, View, KeyboardAvoidingView} from 'react-native'
+import { StyleSheet, Text, View, KeyboardAvoidingView, TouchableOpacity, Alert, ImageBackground} from 'react-native'
 import {Button, Input, Image} from "react-native-elements";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore"; 
+import {StatusBar} from 'expo-status-bar'
 import * as Location from 'expo-location'
+import {Camera} from 'expo-camera'
 
 const AddImageScreen = ( { navigation } )=>{
     // function addToDb(imageuri, lat, long, timestamp){
