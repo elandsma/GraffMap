@@ -120,7 +120,7 @@ const MapScreen = ( { navigation } )=>{
                         <Callout><Text>You Are Here</Text></Callout>
                     </Marker>
                 :
-                <></>
+                <></> 
                 }
                 {markerLocations.map((marker)=>
                     <Marker
