@@ -5,10 +5,9 @@ import {Button, Input, Image} from "react-native-elements";
 const AboutScreen = ( {navigation })=>{
     return(
         <View style={styles.container}>
-
             <Text>GraffMap</Text>
-            <Text>{"\n"}Current Version: 11/12/21 10:42pm. Beta.</Text>
-            <Text>{"\n"}For inquiries, contact <Text style={{color: 'blue'}} onPress={()=>Linking.openURL('mailto:info@graffmap.net?subject=graffmap&body=')}>info@graffmap.net</Text></Text>
+            <Text>{"\n"}Current Version: 11/24/21 10:30pm. Beta.</Text>
+            <Text>{"\n"}Inquiries: <Text style={{color: 'blue'}} onPress={()=>Linking.openURL('mailto:info@graffmap.net?subject=graffmap&body=')}>info@graffmap.net</Text></Text>
             {/* <Text>{"\n"}Inquiries:</Text>
             <Button onPress={() => Linking.openURL('mailto:support@example.com') }
                 title="support@example.com" /> */}
