@@ -6,7 +6,6 @@ import {Button, Input, Image} from "react-native-elements";
 const LoadingScreen = ( {navigation} ) =>{
     const [isLoaded, setIsLoaded] = useState(false);
     
-
     return(
         <KeyboardAvoidingView behavior='padding' style={styles.container}>
             <StatusBar style="light"/>
