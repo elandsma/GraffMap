@@ -1,20 +1,26 @@
 import React, {useState, useEffect} from 'react'
 import { Platform, StyleSheet, Text, View, KeyboardAvoidingView, TouchableOpacity, Alert, ImageBackground, ActivityIndicator} from 'react-native'
 import {Button, Input, Image} from "react-native-elements";
-import {StatusBar} from 'expo-status-bar'
-import * as Location from 'expo-location'
-import {Camera} from 'expo-camera'
+import  Modal  from "react-native-modal";
+import {StatusBar} from 'expo-status-bar';
+import * as Location from 'expo-location';
+import {Camera} from 'expo-camera';
 import { supabase } from "./../supabase-service";
+import UploadingModal from '../components/UploadingModal';
 
 let camera = Camera
 const AddImageScreen = ( { navigation } )=>{
-    const [startCamera, setStartCamera] = useState(false)
-    const [previewVisible, setPreviewVisible] = useState(false)
-    const [capturedImage, setCapturedImage] = useState(null)
-    const [cameraType, setCameraType] = useState(Camera.Constants.Type.back)
+    const [startCamera, setStartCamera] = useState(false);
+    const [previewVisible, setPreviewVisible] = useState(false);
+    const [capturedImage, setCapturedImage] = useState(null);
+    const [cameraType, setCameraType] = useState(Camera.Constants.Type.back);
     const [flashMode, setFlashMode] = useState('off')
     const [location, setLocation] = useState(null);
     const [errorMsg, setErrorMsg] = useState(null);
+    const [showUploadingModal, setShowUploadingModal] = useState(false);
+    const [attemptingUpload, setAttemptingUpload] = useState(false);
+    const [uploadWasSuccess, setUploadWasSuccess] = useState(null);
+    const [uploadResults, setUploadResults] = useState(null);
 
     const __startCamera = async () => {
         const {status} = await Camera.requestCameraPermissionsAsync()
@@ -35,10 +41,10 @@ const AddImageScreen = ( { navigation } )=>{
         setCapturedImage(photo)
     }
 
-    const __savePhoto = () => {
-        console.log("Debug: In savePhoto")
-        uploadPhotoToBucket()
-    }
+    // const __savePhoto = () => {
+    //     console.log("Debug: In savePhoto")
+    //     uploadPhotoToBucket()
+    // }
 
     const __retakePicture = () => {
         setCapturedImage(null)
@@ -64,14 +70,33 @@ const AddImageScreen = ( { navigation } )=>{
         }
     }
 
-    const uploadPhotoToBucket = async()=>{
+    const uploadPhotoToBucket2 = async()=>{
+        setAttemptingUpload(true);
+        setShowUploadingModal(true);
+        let results = await uploadPhotoToBucketHelper()
+        .then((res)=>{
+            console.log("DEBUG SUCCESS UPLOAD")
+            setUploadWasSuccess(true)
+            setAttemptingUpload(false);
+            setUploadResults(res);
+        })
+        .catch((err)=>{ 
+            console.log("DEBUG FAIL UPLOAD")
+            setUploadWasSuccess(false)
+            setAttemptingUpload(false);
+            setUploadResults(err);
+        })
+    }
+
+    const uploadPhotoToBucket = async() =>{
+        setAttemptingUpload(true);
+        setShowUploadingModal(true);
         try{
             if(!capturedImage){
                 throw new Error("!capturedImage")
             }
             let photo = capturedImage;
-            console.log("debug: in uploadPhotoToBucket()")
-            console.log("URI: "+photo.uri)
+            console.log("debug: in uploadPhotoToBucket() for "+photo.uri)
             //get extension
             const ext = photo.uri.substring(photo.uri.lastIndexOf(".") + 1);
             //get filename
@@ -89,19 +114,28 @@ const AddImageScreen = ( { navigation } )=>{
                 .from("graffimages")
                 .upload(fileName, formData);
             if(error) throw new Error(error.message);  //if supabase error, throw new exception.
-            console.log(data)
             //return original photo, and supabase image data
-            Alert.alert("Upload succesful. URI: "+data.Key )
+            // Alert.alert("Upload succesful. URI: "+data.Key )
+            console.log("SUCCESS: ")
+            console.log(data)
+            setUploadWasSuccess(true)
+            setAttemptingUpload(false);
+            setUploadResults(data.Key);
 
             //TODO: Here: Add URI to database alongside geolocation and timestamp.
+            //URI is data.key
+            //will also need to refactor these states to show success/failure to account for database insert as well.
 
             //TODO: Deal with redirect aftersuccessful upload. Potentially show the image in the Display view component (which is yet to be built)
-
+            //^Nevermind - Handling this in Modal with clickable currently.
             return {...photo, imageData: data};
         }
         catch(e){
             console.log("Image upload error: "+e);
-            Alert.alert("Error"+e);
+            // Alert.alert("Error"+e);
+            setUploadWasSuccess(false)
+            setAttemptingUpload(false);
+            setUploadResults("Upload Error: "+e);
         }
     }
 
@@ -290,14 +324,63 @@ const AddImageScreen = ( { navigation } )=>{
                     </View>
                 )
             }
-
-            <StatusBar style="auto" />           
+            <StatusBar style="auto" />
+        
+            {/* Maybe make this modal an imported component */}
+            <Modal
+                animationIn="fadeIn"
+                backdropOpacity={0.6}
+                hasBackdrop={true}
+                backdropColor="black"
+                isVisible={showUploadingModal}
+                onRequestClose={()=>{
+                    setShowUploadingModal(false);
+                }}    
+            >
+                <View style={modalStyles.centeredView}>
+                    <View style={modalStyles.modalView}>
+                        {attemptingUpload?
+                        <>
+                            <Text style={modalStyles.modalText}>Saving photo...</Text>
+                            {/* <Text>{capturedImage.uri}</Text> */}
+                            <ActivityIndicator size="large" color="#00ff00" />
+                        </>
+                        :
+                        <>
+                            {uploadWasSuccess?
+                            <>
+                                <Text>Success! {uploadResults}{"\n"}</Text>
+                                <TouchableOpacity
+                                    style={[modalStyles.button, modalStyles.buttonClose]}
+                                    onPress={() => navigation.navigate('Home')}
+                                >
+                                    <Text style={modalStyles.textStyle}>Home</Text>
+                                    {/* Todo: Go to display of this photo on map or in display view? As opposed to just going home*/}
+                                    {/* Also potentially add multiple options here. */}
+                                </TouchableOpacity>
+                            </>
+                            :
+                            <>
+                                <Text>{uploadResults}{"\n"} </Text>
+                                <TouchableOpacity
+                                    style={[modalStyles.button, modalStyles.buttonClose]}
+                                    onPress={() => setShowUploadingModal(false)}
+                                >
+                                    <Text style={modalStyles.textStyle}>Return</Text>
+                                </TouchableOpacity>
+                            </>
+                            }                            
+                        </>
+                        }                        
+                    </View>
+                </View>
+            </Modal> 
         </KeyboardAvoidingView>
     )
 }
 
 const CameraPreview = ({photo, retakePicture, savePhoto}) => {
-    console.log('debug: previewing photo:', photo)
+    // console.log('debug: previewing photo:', photo)
     return (
         <View
             style={{
@@ -397,4 +480,49 @@ const styles = StyleSheet.create({
         marginTop: 10,
         width: 200,
     }
+
+});
+
+const modalStyles = StyleSheet.create({
+    centeredView: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        marginTop: 22
+      },
+      modalView: {
+        margin: 20,
+        backgroundColor: "white",
+        borderRadius: 20,
+        padding: 35,
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+          width: 0,
+          height: 2
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5
+      },
+      button: {
+        borderRadius: 20,
+        padding: 10,
+        elevation: 2
+      },
+      buttonOpen: {
+        backgroundColor: "#F194FF",
+      },
+      buttonClose: {
+        backgroundColor: "#2196F3",
+      },
+      textStyle: {
+        color: "white",
+        fontWeight: "bold",
+        textAlign: "center"
+      },
+      modalText: {
+        marginBottom: 15,
+        textAlign: "center"
+      }
 });
