@@ -20,7 +20,7 @@ const AddImageScreen = ( { navigation } )=>{
     const [showUploadingModal, setShowUploadingModal] = useState(false);
     const [attemptingUpload, setAttemptingUpload] = useState(false);
     const [uploadWasSuccess, setUploadWasSuccess] = useState(null);
-    const [uploadResults, setUploadResults] = useState(null);
+    const [addArtworkResultDisplay, setAddArtworkResultDisplay] = useState(null);
 
     const __startCamera = async () => {
         const {status} = await Camera.requestCameraPermissionsAsync()
@@ -40,11 +40,6 @@ const AddImageScreen = ( { navigation } )=>{
         //setStartCamera(false)
         setCapturedImage(photo)
     }
-
-    // const __savePhoto = () => {
-    //     console.log("Debug: In savePhoto")
-    //     uploadPhotoToBucket()
-    // }
 
     const __retakePicture = () => {
         setCapturedImage(null)
@@ -70,6 +65,7 @@ const AddImageScreen = ( { navigation } )=>{
         }
     }
 
+    //erase this, used for testing
     const uploadPhotoToBucket2 = async()=>{
         setAttemptingUpload(true);
         setShowUploadingModal(true);
@@ -96,12 +92,11 @@ const AddImageScreen = ( { navigation } )=>{
                 throw new Error("!capturedImage")
             }
             let photo = capturedImage;
-            console.log("debug: in uploadPhotoToBucket() for "+photo.uri)
-            //get extension
+            //get extension for uploading
             const ext = photo.uri.substring(photo.uri.lastIndexOf(".") + 1);
-            //get filename
+            //get filename for uploading
             const fileName = photo.uri.replace(/^.*[\\\/]/,"");
-
+            //create object for uploading
             var formData = new FormData();
             formData.append("files",{
                 uri: photo.uri,
@@ -109,35 +104,71 @@ const AddImageScreen = ( { navigation } )=>{
                 type: photo.type ? 'image/${ext}' : 'video/${ext}',
             })
 
-            //upload
-            const { data, error } = await supabase.storage
+            //upload photo to bucket
+            const uploadResult = await supabase.storage
                 .from("graffimages")
                 .upload(fileName, formData);
-            if(error) throw new Error(error.message);  //if supabase error, throw new exception.
+            if(uploadResult.error) throw new Error(uploadResult.error.message);  //if supabase error, throw new exception.
             //return original photo, and supabase image data
-            // Alert.alert("Upload succesful. URI: "+data.Key )
-            console.log("SUCCESS: ")
-            console.log(data)
+            console.log("Image Upload Successful: ")
+            console.log(uploadResult.data)
+
+            //gathering data for inserting to database
+            let rowData={
+                uri: uploadResult.data.Key, 
+                lat: location.coords.latitude, 
+                long: location.coords.longitude
+            }
+            
+            //insert to database
+            const insertResult = await supabase
+                .from('artworkdata')
+                .insert([
+                { 
+                    uri: rowData.uri, 
+                    lat: rowData.lat, 
+                    long: rowData.long,
+                },
+                ])
+
+            console.log(insertResult)
+            if(insertResult.error){
+                throw new Error(insertResult.error.message);
+            }
+            
+            //if we reach this point, there no errors in the image upload or the db row insert, so we can reflect that in our state
             setUploadWasSuccess(true)
             setAttemptingUpload(false);
-            setUploadResults(data.Key);
-
-            //TODO: Here: Add URI to database alongside geolocation and timestamp.
-            //URI is data.key
-            //will also need to refactor these states to show success/failure to account for database insert as well.
+            setAddArtworkResultDisplay(JSON.stringify(insertResult.data))
 
             //TODO: Deal with redirect aftersuccessful upload. Potentially show the image in the Display view component (which is yet to be built)
             //^Nevermind - Handling this in Modal with clickable currently.
-            return {...photo, imageData: data};
+        
+            return {...photo, imageData: insertResult.data};
         }
         catch(e){
-            console.log("Image upload error: "+e);
-            // Alert.alert("Error"+e);
+            console.log("Image upload or insert error: "+e);
             setUploadWasSuccess(false)
             setAttemptingUpload(false);
-            setUploadResults("Upload Error: "+e);
+            setAddArtworkResultDisplay("Upload or Insert Error: "+e);
         }
     }
+
+    // const addRowToDb = async(rowData)=>{
+    //     // try{
+    //         const { data, error } = await supabase
+    //         .from('artworkdata')
+    //         .insert([
+    //         { 
+    //             uri: rowData.uri, 
+    //             lat: rowData.lat, 
+    //             long: rowData.long,
+    //         },
+    //         ])
+    //         return {data, error}        
+    // } 
+
+    
 
     useEffect(() => {
         (async () => {
@@ -349,7 +380,7 @@ const AddImageScreen = ( { navigation } )=>{
                         <>
                             {uploadWasSuccess?
                             <>
-                                <Text>Success! {uploadResults}{"\n"}</Text>
+                                <Text>Success! {addArtworkResultDisplay}{"\n"}</Text>
                                 <TouchableOpacity
                                     style={[modalStyles.button, modalStyles.buttonClose]}
                                     onPress={() => navigation.navigate('Home')}
@@ -361,7 +392,7 @@ const AddImageScreen = ( { navigation } )=>{
                             </>
                             :
                             <>
-                                <Text>{uploadResults}{"\n"} </Text>
+                                <Text>{addArtworkResultDisplay}{"\n"} </Text>
                                 <TouchableOpacity
                                     style={[modalStyles.button, modalStyles.buttonClose]}
                                     onPress={() => setShowUploadingModal(false)}
