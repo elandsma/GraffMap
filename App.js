@@ -10,7 +10,7 @@ import MapScreen from './screens/MapScreen';
 import AboutScreen from './screens/AboutScreen';
 import RandomImageScreen from './screens/RandomImageScreen';
 import { supabase } from "./supabase-service";
-
+import 'react-native-url-polyfill/auto'
 import { Header } from './components/Header';
 
 // import firebase from "firebase";
