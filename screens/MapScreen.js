@@ -1,17 +1,45 @@
 import React, {useState, useEffect}  from 'react'
-import MapView, { Callout, Marker, PROVIDER_GOOGLE} from 'react-native-maps';
-import { Platform, StyleSheet, Text, View, Dimensions, ActivityIndicator, SafeAreaView} from 'react-native';
+import MapView, { Callout, CalloutSubview, Marker, PROVIDER_GOOGLE} from 'react-native-maps';
+import { Platform, Button, Image, StyleSheet, Text, View, Dimensions, ActivityIndicator, SafeAreaView} from 'react-native';
 import * as Location from 'expo-location'
+import { supabase } from "./../supabase-service";
+import { SUPABASE_URL } from "react-native-dotenv"
+
 // import { db } from '../firebase';
 
 const MapScreen = ( { navigation } )=>{
-    const [markerLocations, setMarkerLocations] = useState();
     const [location, setLocation] = useState(null);
     const [errorMsg, setErrorMsg] = useState(null);
     const [initialMapLocation, setInitialMapLocation] = useState(null);
+    const [artworkdata, setArtworkdata] = useState([]);
 
-    useEffect(() => {
-        (async () => {
+    useEffect(()=>{
+        fetchMarkers()
+        getInitialLocation()
+    }, [])
+
+    /**
+     * Fetch all artwork items from database.
+     * TODO: get only unique locations 
+     *    possible workflow: if there are duplicates, only use most recent, so we have the best/newest image for callout thumbnail
+     *    because we don't need to have the other older artworks in the array used to map the markers.
+     */
+    async function fetchMarkers(){
+        console.log("fetchMarkers()")
+        let { data, error } = await supabase
+            .from('artworkdata')
+            .select('*')
+        setArtworkdata(data)
+        if(error){console.log("DB Fetch Error")}
+        console.log(data)
+    }
+
+    /**
+     * Request location permissions: If given, set initial location of map to current. If not, use hard-coded default
+     * Todo: instead of hard-coded default, perhaps use random artwork location from database if there is no geolocation permission    
+     */
+    async function getInitialLocation(){
+            console.log("getInitialLocation()")
             let { status } = await Location.requestForegroundPermissionsAsync();
             if (status !== 'granted') {
                 setErrorMsg('Permission to access location was denied');
@@ -21,7 +49,6 @@ const MapScreen = ( { navigation } )=>{
                     latitudeDelta: 0.0922,
                     longitudeDelta: 0.0421, 
                 })
-                // todo: make this random location that has data?
                 return;
             }
             let location = await Location.getCurrentPositionAsync({});
@@ -32,8 +59,7 @@ const MapScreen = ( { navigation } )=>{
                 latitudeDelta: 0.0922,
                 longitudeDelta: 0.0421, 
             })
-        })();
-    }, []);
+    }
 
     //this was used for debugging the initial location by displaying on screen, can probably delete.
     let text = 'Waiting..';
@@ -65,28 +91,13 @@ const MapScreen = ( { navigation } )=>{
                 "description":"bowen bridge"
             }
         ]
-    
-    
-    // get locations from database, we will iterate through these locations to make markers from each.
-    useEffect(() => {
-        setMarkerLocations(markersData)
-        // fetch('locations.json') //endpoint to be made
-        // .then(res=>res.json())
-        // .then(data=>{
-        //     setMarkerLocations(data)
-        // })
-        // .catch(console.error)
-    }, []);  
-      //maybe pass the current area of map in as a dependency, so when the map changes so do the markers? 
-      // as opposed to creating markers for every datapoint regardless of our current view
 
-    //TODO: Make this work on desktop perhaps
+    //TODO: Make this work on desktop perhaps. But for now it is broken
     if(Platform.OS != 'ios' && Platform.OS != 'android'){
         return(
             <Text>Currently, map view is only available on mobile devices. Your platform is {Platform.OS} </Text>
         )
     }
-
 
     if (initialMapLocation==null){
         return(
@@ -99,10 +110,12 @@ const MapScreen = ( { navigation } )=>{
 
     return (
         <>
+        
         <View style={styles.container}>
             {/* <Text>{text}</Text> */}
             {/* <Text>INITIAL:{JSON.stringify(initialMapLocation)}</Text> */}
             {/* <Text>{JSON.stringify(markerLocations)}</Text> */}
+
 
             <MapView
                 style={styles.map}
@@ -122,15 +135,38 @@ const MapScreen = ( { navigation } )=>{
                 :
                 <></> 
                 }
-                {markerLocations.map((marker)=>
-                    <Marker
-                        coordinate={{ latitude: marker.lat, longitude: marker.long}}
-                        key={marker.uuid}
-                        pinColor="black"
-                    >
-                        <Callout><Text>{marker.description}</Text></Callout>
-                    </Marker>
-                )}
+
+
+                { artworkdata.map((marker)=>{
+                    let imageurl = SUPABASE_URL +"/storage/v1/object/public/"+marker.uri
+                    console.log(imageurl)
+                    return(
+                        <Marker
+                            coordinate={{ latitude: marker.lat, longitude: marker.long}}
+                            key={marker.uuid}
+                            pinColor="purple"
+                        >
+                        {/* // https://vyqmzznxlhwbcrguaepk.supabase.in/storage/v1/object/public/graffimages/test1.jpg  */}
+                            <Callout tooltip>
+                                {/* potential todo: The entire callout can have an "onPress" callback and that can navigate to detail page */}
+                                <View>
+                                    <View style={styles.bubble}>
+                                        <Image
+                                            style={styles.calloutThumbnail}
+                                            source={{uri: imageurl}}
+                                            // resizeMode={'cover'}
+                                        />
+                                        <Button title='View Detail' onPress={()=> {
+                                            navigation.navigate('Random'), {
+                                                lat: marker.lat,
+                                                long: marker.long
+                                        }}}/>
+                                    </View>
+                                </View>
+                            </Callout>
+                        </Marker>
+                    )
+                })} 
             </MapView>         
         </View>
         </>
@@ -148,6 +184,22 @@ const styles = StyleSheet.create({
         width: Dimensions.get('window').width,
         height: Dimensions.get('window').height,
     },
+    bubble:{
+        flexDirection: 'column',
+        alignSelf: 'flex-start',
+        backgroundColor: '#fff',
+        borderRadius: 6,
+        borderColor: '#ccc',
+        borderWidth: 0.5,
+        padding: 0,
+        width: 150
+    },
+    calloutThumbnail:{
+        width: '100%',
+        height: undefined,
+        aspectRatio: 3/2,
+        flex: 1,
+    }
 });
 
 export default MapScreen
