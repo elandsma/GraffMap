@@ -65,7 +65,7 @@ const AddImageScreen = ( { navigation } )=>{
         }
     }
 
-    //erase this, used for testing
+    //erase this later, used for testing
     const uploadPhotoToBucket2 = async()=>{
         setAttemptingUpload(true);
         setShowUploadingModal(true);
@@ -84,6 +84,15 @@ const AddImageScreen = ( { navigation } )=>{
         })
     }
 
+    /**
+     * Adds photo to bucket.
+     * Then, inserts new row into database with: 
+     *      UUID, 
+     *      lat & long (from location state), 
+     *      timestamp (server side Date.now() upon insert),
+     *      URI (returned from bucket upload)
+     * @returns photo (which is 'capturedImage' state), imageData (which is the returned result of the database insert)
+     */
     const uploadPhotoToBucket = async() =>{
         setAttemptingUpload(true);
         setShowUploadingModal(true);
@@ -124,13 +133,12 @@ const AddImageScreen = ( { navigation } )=>{
             const insertResult = await supabase
                 .from('artworkdata')
                 .insert([
-                { 
-                    uri: rowData.uri, 
-                    lat: rowData.lat, 
-                    long: rowData.long,
-                },
+                    { 
+                        uri: rowData.uri, 
+                        lat: rowData.lat, 
+                        long: rowData.long,
+                    },
                 ])
-
             console.log(insertResult)
             if(insertResult.error){
                 throw new Error(insertResult.error.message);
@@ -154,6 +162,9 @@ const AddImageScreen = ( { navigation } )=>{
         }
     }
 
+    /**
+     * This is inside addtobucket, decided not to make it's own function, but subject to change.
+     **/
     // const addRowToDb = async(rowData)=>{
     //     // try{
     //         const { data, error } = await supabase
@@ -167,9 +178,11 @@ const AddImageScreen = ( { navigation } )=>{
     //         ])
     //         return {data, error}        
     // } 
-
     
-
+    /**
+     *  Ask permission for geolocation upon render. If granted, assign to state. Location state is null by default.
+     *  Later on, there is a null check for location state, which presents a the 'errorMsg' state assigned here if permission is not granted.
+     */
     useEffect(() => {
         (async () => {
             let { status } = await Location.requestForegroundPermissionsAsync();

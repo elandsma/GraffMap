@@ -109,19 +109,17 @@ const MapScreen = ( { navigation } )=>{
     }
 
     return (
-        <>
-        
+        <>        
         <View style={styles.container}>
             {/* <Text>{text}</Text> */}
             {/* <Text>INITIAL:{JSON.stringify(initialMapLocation)}</Text> */}
             {/* <Text>{JSON.stringify(markerLocations)}</Text> */}
 
-
             <MapView
                 style={styles.map}
                 initialRegion={initialMapLocation}
                 // provider={PROVIDER_GOOGLE}
-            >
+            >                
                 {location!=null?
                     <Marker
                         coordinate={{
@@ -135,7 +133,6 @@ const MapScreen = ( { navigation } )=>{
                 :
                 <></> 
                 }
-
 
                 { artworkdata.map((marker)=>{
                     let imageurl = SUPABASE_URL +"/storage/v1/object/public/"+marker.uri
