@@ -276,7 +276,7 @@ const AddImageScreen = ( { navigation } )=>{
                                                 </Text>
                                             </TouchableOpacity>
                         
-                                            {/* below code flips to front camera - removed. */}
+                                            {/* below code flips to front camera - removed because probably not useful for this. */}
                                             {/*
                                             <TouchableOpacity
                                                 onPress={__switchCamera}
@@ -342,6 +342,10 @@ const AddImageScreen = ( { navigation } )=>{
                             alignItems: 'center'
                         }}
                     >
+                        {/* TODO: 
+                            Add Text here about taking photo in vertical mode only (or other instructions)
+                            Or, allow horizontal photos to be taken and subsequently rotated
+                        */}
                         <TouchableOpacity
                             onPress={__startCamera}
                             style={{
@@ -456,15 +460,15 @@ const CameraPreview = ({photo, retakePicture, savePhoto}) => {
                     >
                         <TouchableOpacity
                             onPress={retakePicture}
-                                style={{
-                                    width: 100,
-                                    height: 40,
-                                    alignItems: 'center',
-                                    borderRadius: 20,
-                                    backgroundColor: 'black',
-                                    textAlignVertical: 'center',
-                                    justifyContent: 'center',
-                                }}
+                            style={{
+                                width: 100,
+                                height: 40,
+                                alignItems: 'center',
+                                borderRadius: 20,
+                                backgroundColor: 'black',
+                                textAlignVertical: 'center',
+                                justifyContent: 'center',
+                            }}
                         >     
                             <Text
                                 style={{
