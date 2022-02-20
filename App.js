@@ -9,6 +9,8 @@ import TakePhotoScreen from './screens/TakePhotoScreen';
 import MapScreen from './screens/MapScreen';
 import AboutScreen from './screens/AboutScreen';
 import RandomImageScreen from './screens/RandomImageScreen';
+import LocationDetailScreen from './screens/LocationDetailScreen';
+
 import { supabase } from "./supabase-service";
 import 'react-native-url-polyfill/auto'
 import { Header } from './components/Header';
@@ -66,6 +68,7 @@ export default function App() {
                 <Stack.Screen name="Add Image" component={AddImageScreen}/>
                 <Stack.Screen name="Map" component={MapScreen}/>
                 <Stack.Screen name="Random" component={RandomImageScreen}/>
+                <Stack.Screen name="Location Detail" component={LocationDetailScreen}/>
             </Stack.Navigator>
         </NavigationContainer>
         </>
