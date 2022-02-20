@@ -6,7 +6,7 @@ const AboutScreen = ( {navigation })=>{
     return(
         <View style={styles.container}>
             <Text>GraffMap</Text>
-            <Text>{"\n"}Current Version: 11/24/21 10:30pm. Beta.</Text>
+            <Text>{"\n"}Current Version: 2/19/22 9:20pm. Beta.</Text>
             <Text>{"\n"}Inquiries: <Text style={{color: 'blue'}} onPress={()=>Linking.openURL('mailto:info@graffmap.net?subject=graffmap&body=')}>info@graffmap.net</Text></Text>
             {/* <Text>{"\n"}Inquiries:</Text>
             <Button onPress={() => Linking.openURL('mailto:support@example.com') }
