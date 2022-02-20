@@ -62,12 +62,13 @@ export default function App() {
         <>
         <NavigationContainer style={styles.container}>
             <Stack.Navigator screenOptions={globalScreenOptions} >
-                <Stack.Screen name="Home" component={HomeScreen}
-                    options={{ headerTitle: (props) => <LogoTitle {...props}/>}} />
+                {/* <Stack.Screen name="Home" component={HomeScreen}
+                    options={{ headerTitle: (props) => <LogoTitle {...props}/>}} /> */}
+                <Stack.Screen name="Home" component={HomeScreen} options={{title: "Home"}}/>
                 <Stack.Screen name="About" component={AboutScreen}/>
                 <Stack.Screen name="Add Image" component={AddImageScreen}/>
                 <Stack.Screen name="Map" component={MapScreen}/>
-                <Stack.Screen name="Random" component={RandomImageScreen}/>
+                <Stack.Screen name="Random" component={RandomImageScreen} options={{title: "Random Location"}}/>
                 <Stack.Screen name="Location Detail" component={LocationDetailScreen}/>
             </Stack.Navigator>
         </NavigationContainer>
