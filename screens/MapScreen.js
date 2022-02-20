@@ -1,6 +1,6 @@
 import React, {useState, useEffect}  from 'react'
 import MapView, { Callout, CalloutSubview, Marker, PROVIDER_GOOGLE} from 'react-native-maps';
-import { Platform, Button, Image, StyleSheet, Text, View, Dimensions, ActivityIndicator, SafeAreaView} from 'react-native';
+import { Platform, Button, Image, StyleSheet, Text, View, TouchableOpacity, Dimensions, ActivityIndicator, SafeAreaView} from 'react-native';
 import * as Location from 'expo-location'
 import { supabase } from "./../supabase-service";
 import { SUPABASE_URL } from "react-native-dotenv"
@@ -139,7 +139,7 @@ const MapScreen = ( { navigation } )=>{
                     console.log(imageurl)
                     return(
                         <Marker
-                            coordinate={{ latitude: marker.lat, longitude: marker.long}}
+                            coordinate={{ latitude: Number(marker.lat), longitude: Number(marker.long)}}
                             key={marker.uuid}
                             pinColor="purple"
                         >
@@ -153,11 +153,11 @@ const MapScreen = ( { navigation } )=>{
                                             source={{uri: imageurl}}
                                             // resizeMode={'cover'}
                                         />
-                                        <Button title='View Detail' onPress={()=> {
-                                            navigation.navigate('Random'), {
-                                                lat: marker.lat,
-                                                long: marker.long
-                                        }}}/>
+
+
+                                    <Button title='View Detail' 
+                                        onPress={()=> {navigation.navigate('Location Detail', { lat: marker.lat, long: marker.long})}}
+                                    />
                                     </View>
                                 </View>
                             </Callout>
@@ -196,6 +196,9 @@ const styles = StyleSheet.create({
         height: undefined,
         aspectRatio: 3/2,
         flex: 1,
+    },
+    clickForDetailText:{
+        color: '#2C6BED'
     }
 });
 
