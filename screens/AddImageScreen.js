@@ -334,18 +334,15 @@ const AddImageScreen = ( { navigation } )=>{
                         }
                     </View>
                 ) : (
+
                     <View
                         style={{
                             // flex: 1,
-                            backgroundColor: '#fff',
+                            // backgroundColor: '#fff',
                             justifyContent: 'center',
                             alignItems: 'center'
                         }}
                     >
-                        {/* TODO: 
-                            Add Text here about taking photo in vertical mode only (or other instructions)
-                            Or, allow horizontal photos to be taken and subsequently rotated
-                        */}
                         <TouchableOpacity
                             onPress={__startCamera}
                             style={{
@@ -369,6 +366,12 @@ const AddImageScreen = ( { navigation } )=>{
                                 Open Camera
                             </Text>
                         </TouchableOpacity>
+                            
+                        <Text>
+                            {"\n\n\n"} Some Notes: 
+                        </Text>
+                        <Text>{'\u2022'} You must allow geolocation access to take/add photos.</Text>
+                        <Text>{'\u2022'} Photos work best when taken vertically.</Text>
                     </View>
                 )
             }
