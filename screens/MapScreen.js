@@ -1,11 +1,9 @@
 import React, {useState, useEffect}  from 'react'
 import MapView, { Callout, CalloutSubview, Marker, PROVIDER_GOOGLE} from 'react-native-maps';
-import { Platform, Button, Image, StyleSheet, Text, View, TouchableOpacity, Dimensions, ActivityIndicator, SafeAreaView} from 'react-native';
+import { Platform, Button, Image, Alert, StyleSheet, Text, View, TouchableOpacity, Dimensions, ActivityIndicator, SafeAreaView} from 'react-native';
 import * as Location from 'expo-location'
-import { supabase } from "./../supabase-service";
+import { supabase } from "../supabase-service";
 import { SUPABASE_URL } from "react-native-dotenv"
-
-// import { db } from '../firebase';
 
 const MapScreen = ( { navigation } )=>{
     const [location, setLocation] = useState(null);
@@ -14,7 +12,7 @@ const MapScreen = ( { navigation } )=>{
     const [artworkdata, setArtworkdata] = useState([]);
 
     useEffect(()=>{
-        fetchMarkers()
+        fetchMarkers();
         getInitialLocation()
     }, [])
 
@@ -23,15 +21,24 @@ const MapScreen = ( { navigation } )=>{
      * TODO: get only unique locations 
      *    possible workflow: if there are duplicates, only use most recent, so we have the best/newest image for callout thumbnail
      *    because we don't need to have the other older artworks in the array used to map the markers.
+     * 
+     * TODO: Another potential workflow is to create a map of all artworks, with the coords as key and most recent URI as value
      */
     async function fetchMarkers(){
         console.log("fetchMarkers()")
         let { data, error } = await supabase
             .from('artworkdata')
             .select('*')
-        setArtworkdata(data)
-        if(error){console.log("DB Fetch Error")}
-        console.log(data)
+        if(data){
+            console.log(data)
+            setArtworkdata(data);
+            return true;
+        }
+        if(error){
+            console.log("DB Fetch Error")
+            Alert.alert("Error connecting to database")
+            return false;
+        }
     }
 
     /**
@@ -145,7 +152,6 @@ const MapScreen = ( { navigation } )=>{
                         >
                         {/* // https://vyqmzznxlhwbcrguaepk.supabase.in/storage/v1/object/public/graffimages/test1.jpg  */}
                             <Callout tooltip>
-                                {/* potential todo: The entire callout can have an "onPress" callback and that can navigate to detail page */}
                                 <View>
                                     <View style={styles.bubble}>
                                         <Image
@@ -153,7 +159,6 @@ const MapScreen = ( { navigation } )=>{
                                             source={{uri: imageurl}}
                                             // resizeMode={'cover'}
                                         />
-
 
                                     <Button title='View Detail' 
                                         onPress={()=> {navigation.navigate('Location Detail', { lat: marker.lat, long: marker.long})}}
