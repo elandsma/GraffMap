@@ -50,9 +50,14 @@ const RandomImageScreen = ( {navigation })=>{
             {!randomLocation ? 
                 <Text>Randomizing Location....</Text>
                 :
-                <TouchableOpacity style={styles.homeNavButtonTouchable} onPress={()=> navigation.navigate('Location Detail', {lat: randomLocation.lat, long: randomLocation.long})} >
-                    <Text style={styles.homeNavButtonText}> View Random Artwork Location</Text>
+                <><Text>
+                    Random Artwork Location Identified!{"\n"}
+                </Text>
+                <TouchableOpacity style={styles.navButtonTouchable} onPress={()=> navigation.navigate('Location Detail', {lat: randomLocation.lat, long: randomLocation.long})} >
+                    <Text style={styles.navButtonText}> Click To View</Text>
+                    <Button />
                 </TouchableOpacity>
+                </>
             }
         </View>
     )
@@ -67,6 +72,22 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         padding: 10,
     },
-
+    navButtonTouchable: {
+        width: 120,
+        borderRadius: 10,
+        backgroundColor: '#2C6BED',
+        // #14274e
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: 40
+    },
+    navButtonText: {
+        color: '#fff',
+        fontWeight: 'bold',
+        textAlign: 'center',
+        textAlignVertical: 'center',
+        fontSize: 16   
+    }
 });
 
