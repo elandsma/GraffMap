@@ -55,7 +55,6 @@ const RandomImageScreen = ( {navigation })=>{
                 </Text>
                 <TouchableOpacity style={styles.navButtonTouchable} onPress={()=> navigation.navigate('Location Detail', {lat: randomLocation.lat, long: randomLocation.long})} >
                     <Text style={styles.navButtonText}> Click To View</Text>
-                    <Button />
                 </TouchableOpacity>
                 </>
             }
