@@ -32,7 +32,6 @@ const LocationDetailScreen = ( {route, navigation })=>{
     const carouselRef = useRef();
     const flatListRef = useRef();
 
-
     const onTouchThumbnail = (touched) => {
         if (touched === indexSelected) return;
         carouselRef?.current?.snapToItem(touched);
