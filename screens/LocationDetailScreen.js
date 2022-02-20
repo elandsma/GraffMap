@@ -2,20 +2,18 @@ import React, {useState, useEffect} from 'react'
 import { StyleSheet, Text, View, Linking} from 'react-native'
 import {Button, Input, Image} from "react-native-elements";
 import { supabase } from "./../supabase-service";
-import { SUPABASE_URL } from "react-native-dotenv"
 
 const LocationDetailScreen = ( {route, navigation })=>{
     const { lat, long } = route.params;
     const [artworks, setArtworks] = useState(null);
     const [dbError, setdbError] = useState(false);
 
-
     useEffect(()=>{
         fetchArtwork()
     }, [])
 
     /**
-     * Fetch all artwork from given location coords, assign to state
+     * Fetch all artwork from given location coordinates, assign to state
      */
      async function fetchArtwork(){
         try{
@@ -42,6 +40,8 @@ const LocationDetailScreen = ( {route, navigation })=>{
     console.log("Lat: ", lat);
     console.log("Long: ", long);
     
+    //no params given to stack navigator
+    //TODO: maybe type check these as well?
     if(!lat || !long){
         return(
             <View style={styles.container}>
@@ -50,6 +50,7 @@ const LocationDetailScreen = ( {route, navigation })=>{
         )
     }
 
+    //database error
     if(dbError){
         return(
             <View style={styles.container}>
@@ -88,4 +89,3 @@ const styles = StyleSheet.create({
         fontSize: 12
     }
 });
-
