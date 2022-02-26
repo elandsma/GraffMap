@@ -84,6 +84,25 @@ const AddImageScreen = ( { navigation } )=>{
         })
     }
 
+    //Chose to use strings instead. Rounding actually causes more variance - we want less.
+    // function reduceCoordinatePrecision(originalCoord){
+    //     return +(Math.round(originalCoord + "e+4")  + "e-4");
+    // }
+
+    /**
+     * reduces precision of latitude or longitude by restricting to maximum 6 places past deciman
+     * @param originalCoord raw latitude or longitude
+     * @return the new coordinate
+     */
+    function reduceCoordinatePrecision(originalCoord){
+        originalCoord = String(originalCoord);
+        const portions = originalCoord.split('.');
+        let decimals = portions[1];
+        decimals = decimals.substring(0, 4);
+        let newCoord = portions[0].concat(".").concat(decimals)
+        return newCoord;
+    }
+
     /**
      * Adds photo to bucket.
      * Then, inserts new row into database with: 
@@ -93,12 +112,12 @@ const AddImageScreen = ( { navigation } )=>{
      *      URI (returned from bucket upload)
      * @returns photo (which is 'capturedImage' state), imageData (which is the returned result of the database insert)
      */
-    const uploadPhotoToBucket = async() =>{
+    const uploadPhotoToBucket = async() => {
         setAttemptingUpload(true);
         setShowUploadingModal(true);
-        try{
-            if(!capturedImage){
-                throw new Error("!capturedImage")
+        try {
+            if (!capturedImage) {
+                throw new Error("!capturedImage");
             }
             let photo = capturedImage;
             //get extension for uploading
@@ -107,7 +126,7 @@ const AddImageScreen = ( { navigation } )=>{
             const fileName = photo.uri.replace(/^.*[\\\/]/,"");
             //create object for uploading
             var formData = new FormData();
-            formData.append("files",{
+            formData.append("files", {
                 uri: photo.uri,
                 name: fileName,
                 type: photo.type ? 'image/${ext}' : 'video/${ext}',
@@ -117,18 +136,27 @@ const AddImageScreen = ( { navigation } )=>{
             const uploadResult = await supabase.storage
                 .from("graffimages")
                 .upload(fileName, formData);
-            if(uploadResult.error) throw new Error(uploadResult.error.message);  //if supabase error, throw new exception.
+            if (uploadResult.error) {
+                throw new Error(uploadResult.error.message);  //if supabase error, throw new exception.
+            }
             //return original photo, and supabase image data
             console.log("Image Upload Successful: ")
             console.log(uploadResult.data)
 
+            //reduce precision in lat and long to 5 decimal points
+            const latReduced = reduceCoordinatePrecision(location.coords.latitude);
+            const longReduced = reduceCoordinatePrecision(location.coords.longitude);
+            
             //gathering data for inserting to database
             let rowData={
                 uri: uploadResult.data.Key, 
-                lat: location.coords.latitude, 
-                long: location.coords.longitude
+                lat: latReduced, 
+                long: longReduced
             }
             
+            //TODO: restrict precision of lat/long before sending to db?
+            //TODO: perhaps this can be done on back-end by restricting varchar character count
+
             //insert to database
             const insertResult = await supabase
                 .from('artworkdata')
@@ -149,7 +177,7 @@ const AddImageScreen = ( { navigation } )=>{
             setAttemptingUpload(false);
             setAddArtworkResultDisplay(JSON.stringify(insertResult.data))
 
-            //TODO: Deal with redirect aftersuccessful upload. Potentially show the image in the Display view component (which is yet to be built)
+            //TODO: Deal with redirect after successful upload. Potentially show the image in the Display view component?
             //^Nevermind - Handling this in Modal with clickable currently.
         
             return {...photo, imageData: insertResult.data};
@@ -197,8 +225,9 @@ const AddImageScreen = ( { navigation } )=>{
   
     if(Platform.OS != 'ios' && Platform.OS != 'android'){
         return(
-            <KeyboardAvoidingView behavior='padding' style={styles.container}>
+            <KeyboardAvoidingView behavior='padding' style={styles.container}> 
                 <Text>Currently, this functionality is only available on mobile devices. Your platform is {Platform.OS} </Text>
+                {/* TODO: change this to "iOS devices only" since android compatibiltiy is currently questionable? */}
             </KeyboardAvoidingView>
         )
     }
@@ -366,12 +395,7 @@ const AddImageScreen = ( { navigation } )=>{
                                 Open Camera
                             </Text>
                         </TouchableOpacity>
-                            
-                        <Text>
-                            {"\n\n\n"} Some Notes: 
-                        </Text>
-                        <Text>{'\u2022'} You must allow geolocation access to take/add photos.</Text>
-                        <Text>{'\u2022'} Photos work best when taken vertically.</Text>
+                        <Text>{'\u2022'} Note: You must allow geolocation access to take/add photos.</Text>
                     </View>
                 )
             }
@@ -408,7 +432,15 @@ const AddImageScreen = ( { navigation } )=>{
                                     <Text style={modalStyles.textStyle}>Home</Text>
                                     {/* Todo: Go to display of this photo on map or in display view? As opposed to just going home*/}
                                     {/* Also potentially add multiple options here. */}
+
+                                    {/* TODO: potentially add option to add attribute tages? It can be in this modal, and update database if yes.*/}
                                 </TouchableOpacity>
+
+                                <TouchableOpacity style={styles.navButtonTouchable} onPress={()=> navigation.popToTop()} >
+                                    <Text style={styles.navButtonText}> poptotop()</Text>
+                                </TouchableOpacity>
+                                {/* TODO replace 'home' with poptotop? */}
+
                             </>
                             :
                             <>
@@ -431,7 +463,6 @@ const AddImageScreen = ( { navigation } )=>{
 }
 
 const CameraPreview = ({photo, retakePicture, savePhoto}) => {
-    // console.log('debug: previewing photo:', photo)
     return (
         <View
             style={{
