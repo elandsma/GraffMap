@@ -12,26 +12,44 @@ const MapScreen = ( { navigation } )=>{
     const [artworkdata, setArtworkdata] = useState([]);
 
     useEffect(()=>{
-        fetchMarkers();
-        getInitialLocation()
+        const doStates = async() => {
+            await fetchMarkers();
+            await getInitialLocation();
+        }
+        doStates();
     }, [])
 
     /**
      * Fetch all artwork items from database.
-     * TODO: get only unique locations 
-     *    possible workflow: if there are duplicates, only use most recent, so we have the best/newest image for callout thumbnail
-     *    because we don't need to have the other older artworks in the array used to map the markers.
-     * 
-     * TODO: Another potential workflow is to create a map of all artworks, with the coords as key and most recent URI as value
      */
     async function fetchMarkers(){
         console.log("fetchMarkers()")
         let { data, error } = await supabase
             .from('artworkdata')
             .select('*')
+            .order('timestamp', {ascending: false})
         if(data){
-            console.log(data)
-            setArtworkdata(data);
+            console.log("data fetch success. Total number of items: ", data.length);
+            //use a map to only get items with unique lat/long combo. 
+            //Items are already sorted when fetched from db, so we end up only the most recent item from each unique location.
+            let uniques = [];
+            let myMap = new Map();
+            for ( const artwork of data ){
+                if(!myMap.has(artwork.lat)){
+                    const arr = [artwork.long];
+                    myMap.set(artwork.lat, arr);
+                    uniques.push(artwork);
+                }
+                else{ 
+                    const arr = myMap.get(artwork.lat);
+                    if(!arr.includes(artwork.long)){
+                        arr.push(artwork.long);
+                        uniques.push(artwork);
+                    }
+                }
+            }
+            setArtworkdata(uniques);
+            console.log("Unique Locations: ", uniques.length)
             return true;
         }
         if(error){
@@ -42,20 +60,31 @@ const MapScreen = ( { navigation } )=>{
     }
 
     /**
-     * Request location permissions: If given, set initial location of map to current. If not, use hard-coded default
-     * Todo: instead of hard-coded default, perhaps use random artwork location from database if there is no geolocation permission    
+     * Request location permissions: If given, set initial location of map to current. If not, use a random artwork location.
      */
     async function getInitialLocation(){
             console.log("getInitialLocation()")
             let { status } = await Location.requestForegroundPermissionsAsync();
             if (status !== 'granted') {
                 setErrorMsg('Permission to access location was denied');
+
+                let randomLocation = artworkdata[Math.floor(Math.random()*items.length)];
+                console.log(randomLocation)
+
                 setInitialMapLocation({
-                    latitude: 37.78825,
-                    longitude: -122.4324,
+                    latitude: randomLocation.lat,
+                    longitude: randomLocation.long,
                     latitudeDelta: 0.0922,
                     longitudeDelta: 0.0421, 
                 })
+
+                // UNCA
+                // setInitialMapLocation({
+                //     latitude: 37.78825,
+                //     longitude: -122.4324,
+                //     latitudeDelta: 0.0922,
+                //     longitudeDelta: 0.0421, 
+                // })
                 return;
             }
             let location = await Location.getCurrentPositionAsync({});
@@ -76,30 +105,7 @@ const MapScreen = ( { navigation } )=>{
         text = JSON.stringify(location);
     }
     
-    //fake data for testing
-    var markersData=
-        [
-            {
-                "uuid":"67453ghf5643",
-                latlong:{ lat:35.57607713568235, lng:-82.56524179348632 },
-                "uri": "this-is-a-url.com",
-                "lat": 35.57607713568235,
-                "long": -82.56524179348632,
-                "timestamp": "4355245345",
-                "description":"foundy st"
-            },
-            {
-                "uuid":"9467dfsf453",
-                latlong:{lat:35.590398,lng:-82.571690},
-                "uri": "this-is-a-url.com",
-                "lat": 35.590398,
-                "long": -82.571690,
-                "timestamp": "5676575",
-                "description":"bowen bridge"
-            }
-        ]
-
-    //TODO: Make this work on desktop perhaps. But for now it is broken
+    //TODO: Make this work on desktop perhaps. Currently broken.
     if(Platform.OS != 'ios' && Platform.OS != 'android'){
         return(
             <Text>Currently, map view is only available on mobile devices. Your platform is {Platform.OS} </Text>
@@ -118,10 +124,6 @@ const MapScreen = ( { navigation } )=>{
     return (
         <>        
         <View style={styles.container}>
-            {/* <Text>{text}</Text> */}
-            {/* <Text>INITIAL:{JSON.stringify(initialMapLocation)}</Text> */}
-            {/* <Text>{JSON.stringify(markerLocations)}</Text> */}
-
             <MapView
                 style={styles.map}
                 initialRegion={initialMapLocation}
@@ -135,7 +137,8 @@ const MapScreen = ( { navigation } )=>{
                         }}
                         pinColor="red"
                     >
-                        <Callout><Text>You Are Here</Text></Callout>
+                        {/* <Callout><Text>You Are Here</Text></Callout> */}
+                        {/* Removed this callout because it got in the way of the image, for users whose initial location is a random artwork */}
                     </Marker>
                 :
                 <></> 
@@ -143,7 +146,7 @@ const MapScreen = ( { navigation } )=>{
 
                 { artworkdata.map((marker)=>{
                     let imageurl = SUPABASE_URL +"/storage/v1/object/public/"+marker.uri
-                    console.log(imageurl)
+                    // console.log(imageurl)
                     return(
                         <Marker
                             coordinate={{ latitude: Number(marker.lat), longitude: Number(marker.long)}}
