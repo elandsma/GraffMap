@@ -18,7 +18,7 @@ const HomeScreen = ( {navigation })=>{
                 <Text style={styles.homeNavButtonText}> About</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.homeNavButtonTouchable} onPress={()=> navigation.navigate('Random')} >
-                <Text style={styles.homeNavButtonText}> Random Location</Text>
+                <Text style={styles.homeNavButtonText}> Random Artwork</Text>
             </TouchableOpacity>
         </View>
         </>        
