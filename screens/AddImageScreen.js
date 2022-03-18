@@ -1,12 +1,14 @@
 import React, {useState, useEffect} from 'react'
-import { Platform, StyleSheet, Text, View, KeyboardAvoidingView, TouchableOpacity, Alert, ImageBackground, ActivityIndicator} from 'react-native'
-import {Button, Input, Image} from "react-native-elements";
+import { Platform, StyleSheet, Text, View, KeyboardAvoidingView, TouchableOpacity, Alert, ImageBackground, Image, ActivityIndicator} from 'react-native'
+import {Button, Input } from "react-native-elements";
 import  Modal  from "react-native-modal";
 import {StatusBar} from 'expo-status-bar';
 import * as Location from 'expo-location';
 import {Camera} from 'expo-camera';
 import { supabase } from "./../supabase-service";
+import { SUPABASE_URL } from "react-native-dotenv"
 import UploadingModal from '../components/UploadingModal';
+import Tags from "react-native-tags";
 
 let camera = Camera
 const AddImageScreen = ( { navigation } )=>{
@@ -18,9 +20,13 @@ const AddImageScreen = ( { navigation } )=>{
     const [location, setLocation] = useState(null);
     const [errorMsg, setErrorMsg] = useState(null);
     const [showUploadingModal, setShowUploadingModal] = useState(false);
+    const [addAttributesModal, setAddAttributesModal] = useState(false);
     const [attemptingUpload, setAttemptingUpload] = useState(false);
     const [uploadWasSuccess, setUploadWasSuccess] = useState(null);
     const [addArtworkResultDisplay, setAddArtworkResultDisplay] = useState(null);
+    const [dbInsertResult, setDbInsertResult] = useState(null); 
+
+    // const [uploadedUuid, setUploadedUuid] = useState(null);
 
     const __startCamera = async () => {
         const {status} = await Camera.requestCameraPermissionsAsync()
@@ -84,13 +90,14 @@ const AddImageScreen = ( { navigation } )=>{
         })
     }
 
-    //Chose to use strings instead. Rounding actually causes more variance - we want less.
+    // round 4 decimal places for numbers. Used strings instead.
     // function reduceCoordinatePrecision(originalCoord){
     //     return +(Math.round(originalCoord + "e+4")  + "e-4");
     // }
 
     /**
-     * reduces precision of latitude or longitude by restricting to maximum 6 places past deciman
+     * reduces precision of latitude or longitude by restricting to maximum 6 places past decimal
+     * Rounding with numbers causes more variance - we want less, thus, using sliced strings. 
      * @param originalCoord raw latitude or longitude
      * @return the new coordinate
      */
@@ -154,9 +161,6 @@ const AddImageScreen = ( { navigation } )=>{
                 long: longReduced
             }
             
-            //TODO: restrict precision of lat/long before sending to db?
-            //TODO: perhaps this can be done on back-end by restricting varchar character count
-
             //insert to database
             const insertResult = await supabase
                 .from('artworkdata')
@@ -167,19 +171,17 @@ const AddImageScreen = ( { navigation } )=>{
                         long: rowData.long,
                     },
                 ])
-            console.log(insertResult)
+            console.log(insertResult);
             if(insertResult.error){
                 throw new Error(insertResult.error.message);
             }
-            
+            setDbInsertResult(insertResult.data[0]);
+
             //if we reach this point, there no errors in the image upload or the db row insert, so we can reflect that in our state
             setUploadWasSuccess(true)
             setAttemptingUpload(false);
-            setAddArtworkResultDisplay(JSON.stringify(insertResult.data))
-
-            //TODO: Deal with redirect after successful upload. Potentially show the image in the Display view component?
-            //^Nevermind - Handling this in Modal with clickable currently.
-        
+            setAddArtworkResultDisplay(JSON.stringify(insertResult.data));
+ 
             return {...photo, imageData: insertResult.data};
         }
         catch(e){
@@ -395,13 +397,13 @@ const AddImageScreen = ( { navigation } )=>{
                                 Open Camera
                             </Text>
                         </TouchableOpacity>
-                        <Text>{'\u2022'} Note: You must allow geolocation access to take/add photos.</Text>
+                        <Text>{'\n'}{'\u2022'} Note: geolocation access is required to add photos.</Text>
                     </View>
                 )
             }
             <StatusBar style="auto" />
         
-            {/* Maybe make this modal an imported component */}
+            {/* Potential TODO: Maybe make this modal an imported component */}
             <Modal
                 animationIn="fadeIn"
                 backdropOpacity={0.6}
@@ -424,23 +426,81 @@ const AddImageScreen = ( { navigation } )=>{
                         <>
                             {uploadWasSuccess?
                             <>
-                                <Text>Success! {addArtworkResultDisplay}{"\n"}</Text>
-                                <TouchableOpacity
-                                    style={[modalStyles.button, modalStyles.buttonClose]}
-                                    onPress={() => navigation.navigate('Home')}
-                                >
-                                    <Text style={modalStyles.textStyle}>Home</Text>
-                                    {/* Todo: Go to display of this photo on map or in display view? As opposed to just going home*/}
-                                    {/* Also potentially add multiple options here. */}
+                                {addAttributesModal?
+                                    <>
+                                        <Text>Type attributes in the box below. fAttributes</Text>
 
-                                    {/* TODO: potentially add option to add attribute tages? It can be in this modal, and update database if yes.*/}
-                                </TouchableOpacity>
 
-                                <TouchableOpacity style={styles.navButtonTouchable} onPress={()=> navigation.popToTop()} >
-                                    <Text style={styles.navButtonText}> poptotop()</Text>
-                                </TouchableOpacity>
-                                {/* TODO replace 'home' with poptotop? */}
+                                    <Tags
+                                        initialText=""
+                                        textInputProps={{
+                                            placeholder: "attributes, artist, medium, etc"
+                                        }}
+                                        onChangeTags={tags=>console.log(tags)}
+                                        onTagPress={(index, tagLabel, event, deleted) =>
+                                            console.log(index, tagLabel, event, deleted ? "deleted" : "not deleted")
+                                          }
+                                          containerStyle={{ justifyContent: "center" }}
+                                          inputStyle={{ backgroundColor: "#DCDCDC" }}
+                                          tagContainerStyle= {{ backgroundColor: "Green"}}
+                                          renderTag={({ tag, index, onPress, deleteTagOnPress, readonly }) => (
+                                            <TouchableOpacity key={`${tag}-${index}`} onPress={onPress}>
+                                              <Text> {tag} </Text>
+                                            </TouchableOpacity>
+                                          )}
 
+                                    />
+
+                                     
+                                        {console.log(dbInsertResult)}
+                                        <Text>{dbInsertResult.uuid}</Text>
+                                       {/* {let uri = SUPABASE_URL +"/storage/v1/object/public/"+dbInsertResult.uri } */}
+
+                                        <View style={{flexDirection:"row"}}>
+                                            <TouchableOpacity
+                                                style={[modalStyles.button, modalStyles.buttonClose]}
+                                                onPress={() => setAddAttributesModal(false)}
+                                            >
+                                                <Text style={modalStyles.textStyle}>Submit</Text>
+                                            </TouchableOpacity>
+
+                                            <TouchableOpacity
+                                                style={[modalStyles.button, modalStyles.buttonClose]}
+                                                onPress={() => setAddAttributesModal(false)}
+                                            >
+                                                <Text style={modalStyles.textStyle}>Cancel</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    </>
+                                    :
+                                    <>
+                                        <Text>
+                                            Success!{"\n"}
+                                        {/* {addArtworkResultDisplay} */}
+                                        </Text>
+                                        <TouchableOpacity
+                                            style={[modalStyles.button, modalStyles.buttonClose]}
+                                            onPress={() => navigation.navigate('Home')}
+                                        >
+                                            <Text style={modalStyles.textStyle}>Home</Text>
+                                            {/* Todo: Go to display of this photo on map or in display view? As opposed to just going home*/}
+                                            {/* Also potentially add multiple options here. */}
+                                        </TouchableOpacity>
+                                        
+                                        
+
+                                        {/* 
+                                        <Text>{"\n"}</Text>
+                                        <TouchableOpacity
+                                            style={[modalStyles.button, modalStyles.buttonClose]}
+                                            onPress={() => setAddAttributesModal(true)}
+                                        >
+                                            <Text style={modalStyles.textStyle}>Add Attribute Tags</Text>
+                                        </TouchableOpacity> */}
+
+
+                                    </>
+                                }
                             </>
                             :
                             <>
