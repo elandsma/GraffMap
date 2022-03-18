@@ -1,17 +1,21 @@
 import React, {useState, useEffect} from 'react'
-import { StyleSheet, Text, View, Linking, TouchableOpacity} from 'react-native'
+import { StyleSheet, Text, View, Linking, TouchableOpacity, ActivityIndicator } from 'react-native'
 import {Button, Input, Image} from "react-native-elements";
 import { supabase } from "./../supabase-service";
 import { SUPABASE_URL } from "react-native-dotenv"
+import { useIsFocused } from '@react-navigation/native';
 
 const RandomImageScreen = ( {navigation })=>{
     const [randomLocation, setRandomLocation] = useState(null);
-    const [loadingText, setLoadingText] = useState("Randomizing Location....");
     const [dbError, setdbError] = useState(false);
+    const isFocused = useIsFocused();
+
+
 
     useEffect(()=>{
-        fetchLocations()
-    }, [])
+        setRandomLocation(null);
+        fetchLocations();
+    }, [isFocused])
 
     /**
      * Fetch all locations from database. Select one randomly, assign to state
@@ -48,14 +52,18 @@ const RandomImageScreen = ( {navigation })=>{
     return(
         <View style={styles.container}>
             {!randomLocation ? 
-                <Text>Randomizing Location....</Text>
+                <>
+                    <Text>Randomizing Location....</Text>
+                    <ActivityIndicator size="large" color="#00ff00" />
+                </>
                 :
-                <><Text>
-                    Random Artwork Location Identified!{"\n"}
-                </Text>
-                <TouchableOpacity style={styles.navButtonTouchable} onPress={()=> navigation.navigate('Location Detail', {lat: randomLocation.lat, long: randomLocation.long})} >
-                    <Text style={styles.navButtonText}> Click To View</Text>
-                </TouchableOpacity>
+                <>
+                    <Text>
+                        Random Artwork Location Identified!{"\n"}
+                    </Text>
+                    <TouchableOpacity style={styles.navButtonTouchable} onPress={()=> navigation.navigate('Location Detail', {lat: randomLocation.lat, long: randomLocation.long})} >
+                        <Text style={styles.navButtonText}> Click To View</Text>
+                    </TouchableOpacity>
                 </>
             }
         </View>
@@ -89,4 +97,3 @@ const styles = StyleSheet.create({
         fontSize: 16   
     }
 });
-
