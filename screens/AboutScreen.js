@@ -46,7 +46,6 @@ const AboutScreen = ( { navigation } )=>{
         setActiveSections(sections.includes(undefined) ? [] : sections);
       };
     
-
       const renderHeader = (section, _, isActive) => {
         //Accordion Header view
         return (
@@ -81,7 +80,9 @@ const AboutScreen = ( { navigation } )=>{
         <SafeAreaView style={{flex:1}}>
         <View style={styles.container}>
             <ScrollView style={{paddingTop: 40}}>
-                <Text style={{textAlign: 'center'}}>LOGO</Text>
+                <View style={{paddingBottom: 40}}>
+                    <Text style={{textAlign: 'center'}}>LOGO</Text>
+                </View>
                 <View style={{justifyContent: 'spaceBetween'}}>
                     <Accordion
                         activeSections={activeSections}
