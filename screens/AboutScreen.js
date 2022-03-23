@@ -52,9 +52,9 @@ const AboutScreen = ( { navigation } )=>{
         return (
           <Animatable.View
             duration={400}
-            style={[styles.header, isActive ? styles.active : styles.inactive]}
+            style={[styles.header, isActive ? styles.activeHeader : styles.inactive]}
             transition="backgroundColor">
-            <Text style={styles.headerText}>{section.title}</Text>
+            <Text style={[styles.headerText, isActive? styles.activeHeaderText: styles.headerText]}>{section.title}</Text>
           </Animatable.View>
         );
       };
@@ -63,7 +63,7 @@ const AboutScreen = ( { navigation } )=>{
         //Accordion Content view
         return (
           <Animatable.View
-            duration={250}
+            duration={120}
             style={[styles.content, isActive ? styles.active : styles.inactive]}
             transition="backgroundColor">
             <Animatable.Text
@@ -81,30 +81,30 @@ const AboutScreen = ( { navigation } )=>{
         <SafeAreaView style={{flex:1}}>
         <View style={styles.container}>
             <ScrollView style={{paddingTop: 40}}>
+                <Text style={{textAlign: 'center'}}>LOGO</Text>
                 <View style={{justifyContent: 'spaceBetween'}}>
-                <Accordion
-                    activeSections={activeSections}
-                    //for any default active section
-                    sections={CONTENT}
-                    //title and content of accordion
-                    touchableComponent={TouchableOpacity}
-                    //which type of touchable component you want
-                    //It can be the following Touchables
-                    //TouchableHighlight, TouchableNativeFeedback
-                    //TouchableOpacity , TouchableWithoutFeedback
-                    //expandMultiple={False}
-                    //Do you want to expand mutiple at a time or single at a time
-                    renderHeader={renderHeader}
-                    //Header Component(View) to render
-                    renderContent={renderContent}
-                    //Content Component(View) to render
-                    duration={200}
-                    //Duration for Collapse and expand
-                    onChange={setSections}
-                    //setting the state of active sections
-                />
+                    <Accordion
+                        activeSections={activeSections}
+                        //for any default active section
+                        sections={CONTENT}
+                        //title and content of accordion
+                        touchableComponent={TouchableOpacity}
+                        //which type of touchable component you want
+                        //It can be the following Touchables
+                        //TouchableHighlight, TouchableNativeFeedback
+                        //TouchableOpacity , TouchableWithoutFeedback
+                        //expandMultiple={False}
+                        //Do you want to expand mutiple at a time or single at a time
+                        renderHeader={renderHeader}
+                        //Header Component(View) to render
+                        renderContent={renderContent}
+                        //Content Component(View) to render
+                        duration={200}
+                        //Duration for Collapse and expand
+                        onChange={setSections}
+                        //setting the state of active sections
+                    />
                 </View>
-                
             </ScrollView>
             <View>
                 <Text style={{textAlign: "center",}}>Current Version: 3/22/22 5pm Beta</Text>
@@ -135,14 +135,20 @@ const styles = StyleSheet.create({
         textAlign: "center",
         fontSize: 12,
     },
-
     header: {
         backgroundColor: '#F5FCFF',
         padding: 10,
     },
-    header: {
+    activeHeader: {
         backgroundColor: '#F5FCFF',
         padding: 10,
+        fontWeight: 'bold',
+        textDecorationLine: 'underline line-through'
+    },
+    activeHeaderText: {
+        backgroundColor: '#F5FCFF',
+        // textDecorationLine: 'underline',
+        fontWeight: 'bold',
     },
     headerText: {
         textAlign: 'center',
@@ -152,6 +158,8 @@ const styles = StyleSheet.create({
     content: {
         padding: 20,
         backgroundColor: '#fff',
+        borderRadius: 35,
+        overflow: 'hidden',
     },
     active: {
         backgroundColor: 'rgba(255,255,255,1)',

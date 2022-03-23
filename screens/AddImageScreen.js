@@ -371,7 +371,8 @@ const AddImageScreen = ( { navigation } )=>{
                             // flex: 1,
                             // backgroundColor: '#fff',
                             justifyContent: 'center',
-                            alignItems: 'center'
+                            alignItems: 'center',
+                            backgroundColor: '#F5FCFF'
                         }}
                     >
                         <TouchableOpacity
@@ -526,10 +527,11 @@ const CameraPreview = ({photo, retakePicture, savePhoto}) => {
     return (
         <View
             style={{
-                backgroundColor: 'transparent',
+                backgroundColor: '#F5FCFF',
                 flex: 1,
                 width: '100%',
                 height: '100%'
+
             }}
         >
             <ImageBackground
@@ -610,6 +612,8 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
+        backgroundColor: '#F5FCFF'
+
         // padding: 10,
     },
     proceedButton:{
@@ -630,7 +634,7 @@ const modalStyles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        marginTop: 22
+        marginTop: 22,
       },
       modalView: {
         margin: 20,
@@ -666,5 +670,19 @@ const modalStyles = StyleSheet.create({
       modalText: {
         marginBottom: 15,
         textAlign: "center"
-      }
+      },
+      container: {
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 10,
+        backgroundColor: '#F5FCFF'
+    },
+    container: {
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 10,
+        backgroundColor: '#F5FCFF'
+    },
 });

@@ -33,6 +33,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         padding: 10,
+        backgroundColor: '#F5FCFF'
     },
     homeNavButtonTouchable:{
         width: 200,
