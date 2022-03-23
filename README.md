@@ -27,6 +27,12 @@ This section is under construction
 ## Development
 Notes on development will go here.
 
+
+# Future considerations:
+Use global state management tool for various items
+Flag for moderation
+Attribute tags
+
 ## License
 
 TBD
