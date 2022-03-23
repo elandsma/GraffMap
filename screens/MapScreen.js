@@ -5,7 +5,7 @@ import * as Location from 'expo-location'
 import { supabase } from "../supabase-service";
 import { SUPABASE_URL } from "react-native-dotenv"
 
-const MapScreen = ( { navigation } )=>{
+const MapScreen = ( { route, navigation } )=>{
     const [location, setLocation] = useState(null);
     const [errorMsg, setErrorMsg] = useState(null);
     const [initialMapLocation, setInitialMapLocation] = useState(null);
@@ -64,6 +64,26 @@ const MapScreen = ( { navigation } )=>{
      */
     async function getInitialLocation(){
             console.log("getInitialLocation()")
+            if(route.params){
+                console.log("has route")
+                    setInitialMapLocation({
+                        latitude: Number(route.params.showlat),
+                        longitude: Number(route.params.showlong),
+                        latitudeDelta: 0.0922,
+                        longitudeDelta: 0.0421, 
+                    })
+                return;
+            }
+            // if (route.params.showlat && route.params.showlong){
+            //     console.log("received location from params")
+            //     setInitialMapLocation({
+            //         latitude: showlat,
+            //         longitude: showlong,
+            //         latitudeDelta: 0.0922,
+            //         longitudeDelta: 0.0421, 
+            //     })
+            //     return;
+            // }
             let { status } = await Location.requestForegroundPermissionsAsync();
             if (status !== 'granted') {
                 setErrorMsg('Permission to access location was denied');
@@ -129,20 +149,7 @@ const MapScreen = ( { navigation } )=>{
                 initialRegion={initialMapLocation}
                 // provider={PROVIDER_GOOGLE}
             >                
-                {location!=null?
-                    <Marker
-                        coordinate={{
-                            latitude: location.coords.latitude,
-                            longitude: location.coords.longitude
-                        }}
-                        pinColor="red"
-                    >
-                        {/* <Callout><Text>You Are Here</Text></Callout> */}
-                        {/* Removed this callout because it got in the way of the image, for users whose initial location is a random artwork */}
-                    </Marker>
-                :
-                <></> 
-                }
+                
 
                 { artworkdata.map((marker)=>{
                     let imageurl = SUPABASE_URL +"/storage/v1/object/public/"+marker.uri
