@@ -60,7 +60,9 @@ const MapScreen = ( { route, navigation } )=>{
     }
 
     /**
-     * Request location permissions: If given, set initial location of map to current. If not, use a random artwork location.
+     * If lat & long are passed as params, use those as current location. 
+     * Else, if given permissions, use current geolocation. 
+     * Else, use a random artwork location from database.
      */
     async function getInitialLocation(){
             console.log("getInitialLocation()")
@@ -74,16 +76,6 @@ const MapScreen = ( { route, navigation } )=>{
                     })
                 return;
             }
-            // if (route.params.showlat && route.params.showlong){
-            //     console.log("received location from params")
-            //     setInitialMapLocation({
-            //         latitude: showlat,
-            //         longitude: showlong,
-            //         latitudeDelta: 0.0922,
-            //         longitudeDelta: 0.0421, 
-            //     })
-            //     return;
-            // }
             let { status } = await Location.requestForegroundPermissionsAsync();
             if (status !== 'granted') {
                 setErrorMsg('Permission to access location was denied');
@@ -97,14 +89,6 @@ const MapScreen = ( { route, navigation } )=>{
                     latitudeDelta: 0.0922,
                     longitudeDelta: 0.0421, 
                 })
-
-                // UNCA
-                // setInitialMapLocation({
-                //     latitude: 37.78825,
-                //     longitude: -122.4324,
-                //     latitudeDelta: 0.0922,
-                //     longitudeDelta: 0.0421, 
-                // })
                 return;
             }
             let location = await Location.getCurrentPositionAsync({});
@@ -149,8 +133,6 @@ const MapScreen = ( { route, navigation } )=>{
                 initialRegion={initialMapLocation}
                 // provider={PROVIDER_GOOGLE}
             >                
-                
-
                 { artworkdata.map((marker)=>{
                     let imageurl = SUPABASE_URL +"/storage/v1/object/public/"+marker.uri
                     // console.log(imageurl)
