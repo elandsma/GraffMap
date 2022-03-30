@@ -53,7 +53,7 @@ const RandomImageScreen = ( {navigation })=>{
         <View style={styles.container}>
             {!randomLocation ? 
                 <>
-                    <Text>Randomizing Location....</Text>
+                    <Text>Randomizing Location....{"/n"}</Text>
                     <ActivityIndicator size="large" color="#00ff00" />
                 </>
                 :

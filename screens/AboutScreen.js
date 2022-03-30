@@ -2,7 +2,6 @@ import React, {useState, useEffect} from 'react'
 import { StyleSheet, Text, View, Linking, ScrollView, TouchableOpacity, SafeAreaView} from 'react-native'
 import {Button, Input, Image} from "react-native-elements";
 
-
 //import for the animation of Collapse and Expand
 import * as Animatable from 'react-native-animatable';
 //import for the collapsible/Expandable view
@@ -11,34 +10,44 @@ import Collapsible from 'react-native-collapsible';
 import Accordion from 'react-native-collapsible/Accordion';
 
 
-const CONTENT = [
-    {
-        title: 'Motivation',
-        content: 
-            'Motivation for development'
-    },
-    {
-        title: 'Tech',
-        content:
-            'Tech stuff, frameworks, github repo, licensing'
-    },
-    {
-        title: 'Terms & Conditions',
-        content:
-            'fancy stuff'
-    },
-    {
-        title: 'Contact',
-        content:
-            <>
-            <Text>For inquiries: {"\n"}</Text>
-            <Text style={{color: 'blue'}} onPress={()=>Linking.openURL('mailto:info@graffmap.net?subject=graffmap&body=')}>info@graffmap.net</Text>
-            </>
-    },
-]
-
-
 const AboutScreen = ( { navigation } )=>{
+    const CONTENT = [
+        {
+            title: 'Motivation',
+            content: 
+                'This application was developed as a senior capstone project for the Computer Science program at the University of North Carolina at Asheville. Inspired by rich graffiti culture here in North Carolina and the ever-changing landscape of various locations, GraffMap is intended to enable users to preserve chronological snapshots in time of artwork that is otherwise ephemeral by nature.'
+        },
+        {
+            title: 'Tech',
+            content:
+            <>
+                <Text>Built with React Native on the ExpoGo SDK. Hosted by Supabase, an open-source BaaS provider. The code for this application is open-source and may be viewed at {"\n"}<Text style={{color: 'blue'}} onPress={()=>Linking.openURL('https://github.com/elandsma/GraffMap')}>https://github.com/elandsma/GraffMap</Text></Text>
+            </>
+        },
+        {
+            title: 'Legal',
+            content:
+                <>
+                    <Text style={{color: 'blue'}} onPress={()=> {navigation.navigate('Privacy Policy')}} >Privacy Policy</Text>
+                    <Text>{"\n"}{"\n"}</Text>
+                    <Text style={{color: 'blue'}} onPress={()=> {navigation.navigate('Terms and Conditions')}} >Terms & Conditions</Text>
+                    <Text>{"\n"}</Text>
+                    <Text>{"\n"}{"\n"}tldr: Don't break the law. Don't abuse this app. </Text>
+                </>
+        },
+        {
+            title: 'Contact',
+            content:
+                <>
+                <Text>For inquiries: {"\n"}</Text>
+                <Text style={{color: 'blue'}} onPress={()=>Linking.openURL('mailto:info@graffmap.net?subject=graffmap&body=')}>info@graffmap.net</Text>
+                </>
+        },
+    ]
+    
+    
+    
+    
     const [activeSections, setActiveSections] = useState([]);
     const [collapsed, setCollapsed] = useState(true);
     const setSections = (sections) => {

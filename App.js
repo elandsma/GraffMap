@@ -9,6 +9,8 @@ import MapScreen from './screens/MapScreen';
 import AboutScreen from './screens/AboutScreen';
 import RandomImageScreen from './screens/RandomImageScreen';
 import LocationDetailScreen from './screens/LocationDetailScreen';
+import PrivacyPolicy from './screens/PrivacyPolicy';
+import TermsConditions from './screens/TermsConditions';
 
 import { supabase } from "./supabase-service";
 import 'react-native-url-polyfill/auto'
@@ -69,6 +71,9 @@ export default function App() {
                 <Stack.Screen name="Map" component={MapScreen}/>
                 <Stack.Screen name="Random" component={RandomImageScreen} options={{title: "Random Location"}}/>
                 <Stack.Screen name="Location Detail" component={LocationDetailScreen}/>
+                <Stack.Screen name="Privacy Policy" component={PrivacyPolicy}/>
+                <Stack.Screen name="Terms and Conditions" component={TermsConditions}/>
+
             </Stack.Navigator>
         </NavigationContainer>
         </>

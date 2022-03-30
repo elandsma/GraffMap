@@ -398,7 +398,7 @@ const AddImageScreen = ( { navigation } )=>{
                                 Open Camera
                             </Text>
                         </TouchableOpacity>
-                        <Text>{'\n'}{'\u2022'} Note: geolocation access is required to add photos.</Text>
+                        {/* <Text>{'\n'}{'\u2022'} Note: geolocation access is required to add photos.</Text> */}
                     </View>
                 )
             }
