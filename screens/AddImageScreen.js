@@ -169,6 +169,7 @@ const AddImageScreen = ( { navigation } )=>{
                         uri: rowData.uri, 
                         lat: rowData.lat, 
                         long: rowData.long,
+                        timestamp: new Date().toLocaleString()
                     },
                 ])
             console.log(insertResult);
