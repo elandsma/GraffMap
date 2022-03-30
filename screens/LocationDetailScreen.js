@@ -1,10 +1,12 @@
 import React, {useState, useEffect, useRef} from 'react'
 import { StyleSheet, ActivityIndicator, Text, View, Dimensions, FlatList, Image, ScrollView, TouchableOpacity, Linking} from 'react-native'
-import {Button, Input } from "react-native-elements";
+import {Button, Divider, Input } from "react-native-elements";
 import Carousel, { Pagination } from 'react-native-snap-carousel';
 import ImageViewer from 'react-native-image-zoom-viewer';
 import { supabase } from "./../supabase-service";
 import { SUPABASE_URL } from "react-native-dotenv"
+import { useNavigation } from '@react-navigation/native';
+import { ImageBackground } from 'react-native-web';
 
 const {width, height } = Dimensions.get('window');
 const SPACING = 10;
@@ -14,30 +16,11 @@ const LocationDetailScreen = ( {route, navigation })=>{
     const { lat, long } = route.params;
     const [artworks, setArtworks] = useState(null);
     const [dbError, setdbError] = useState(false);
-    const [indexSelected, setIndexSelected] = useState(0);
-    const [customIndexState, setCustomIndexState] = useState(0);
+    const [activeIndex, setActiveIndex] = useState(0);
 
     useEffect(()=>{
         fetchArtwork()
     }, [])
-
-    const onSelect = indexSelected => {
-        setIndexSelected(indexSelected);
-        console.log("New Index: ",indexSelected)
-      };
-
-    const carouselRef = useRef();
-    const flatListRef = useRef();
-
-    customIndex = useRef(0);
-
-    const onTouchThumbnail = (touched) => {
-        console.log("touched: ", touched)
-        customIndex.current = touched
-        setCustomIndexState(touched)
-        if (touched === indexSelected) return;
-        carouselRef?.current?.snapToItem(touched);
-      };
 
     /**
      * Fetch all artwork from given location coordinates, assign to state
@@ -65,7 +48,7 @@ const LocationDetailScreen = ( {route, navigation })=>{
                     uri: SUPABASE_URL +"/storage/v1/object/public/"+art.uri,
                     lat: art.lat,
                     long: art.long,
-                    timestamp: art.timestamp   //todo: convert to unix time here?
+                    timestamp: new Date(art.timestamp)
                 }
                 cleanedData.push(newArt);
                 i++;
@@ -80,110 +63,40 @@ const LocationDetailScreen = ( {route, navigation })=>{
     }
 
 
-    const FlatlistView=(props)=>{
-        artworklist=props.artworklist;
-        return(
-            <View style={{flex:1, justifyContent: 'flex-end', width: '100%', backgroundColor: 'black'}}>
-            <FlatList
-                // ref={flatListRef}
-                horizontal={true}
-                data={artworklist}
-                style={{ position: 'absolute', bottom: 80 }}
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{
-                    paddingHorizontal: SPACING
-                }}
-                keyExtractor={item => item.index}
-                renderItem={({ item, index }) => (
-                    <TouchableOpacity 
-                        activeOpacity={0.9}
-                        onPress={() => onTouchThumbnail(index)}
-                    >
-                        {console.log("Render Item Index: ", index)}
-                        {console.log("customIndex: ", customIndex)}
-                        <Image
-                            style={{
-                            width: THUMB_SIZE,
-                            height: THUMB_SIZE,
-                            marginRight: SPACING,
-                            borderRadius: 16,
-                            borderWidth: index === customIndex.current ? 4 : 0.75,
-                            borderColor: index === customIndex.current ? 'orange' : 'white'
-                            }}
-                            source={{ uri: item.uri}}
-                        />
-                            <Text style={{color:'white'}}>{customIndexState}</Text>
+    const renderItems = ({item})=>{
+        return (
+            <TouchableOpacity onPress = {()=> console.log('clicked')}>
+                <Image 
+                    source={{uri: item.uri}}
+                    style={styles.artworkImage}
+                />
+                <View style={styles.imageFooter}>
+                    <Text style={styles.imageFooterText}>
+                        {item.timestamp.toLocaleString("en-US")}
+                    </Text>
+                    <Text onPress={()=> {navigation.navigate('Map', { showlat: lat, showlong: long})}} style={{color: 'blue'}}>View In Map</Text>
 
-                    </TouchableOpacity>
-                )}
-            />
-        </View>
-        )
+                </View>
+            </TouchableOpacity>
+        );
+    };
+    
 
-
-    }
-
-    const ShowArt=(props)=>{
+    const ShowArt2=(props)=>{
         let artworklist=props.artworks;
         console.log("showArt render")
         return(
-            <>
-                {/* <Text>{lat}, {long}</Text> */}
-                {/* <Image
-                    source={{uri: SUPABASE_URL +"/storage/v1/object/public/"+artworks[0].uri}}
-                    style={styles.artworkImage}
-                        // resizeMode={'cover'}
-                /> */}
-                {/* <Text>Uploaded at: {artworks[0].timestamp}</Text> */}
-                
-                {/* {x=SUPABASE_URL +"/storage/v1/object/public/"+artworks[0].uri} */}              
-
-                <View style={{ flex: 1}}>
-                    <View style={{flex:11, justifyContent: 'flex-start', width: '100%', backgroundColor: 'black'}}>
-                        <Carousel
-                            layout='default'
-                            data={artworklist}
-                            sliderWidth={width}
-                            itemWidth={width}
-                            onSnapToItem={(index) => onSelect(index)}
-                            ref={carouselRef}
-                            renderItem={({ item, index }) => (
-                                <>                           
-                                    <ScrollView maximumZoomScale={5} scrollEnabled={true} minimumZoomScale={1} showsHorizontalScrollIndicator={false} showsVerticalScrollIndicator={false}>
-                                        <Image
-                                            key={item.index}
-                                            style={{ width: '100%', height: undefined, aspectRatio:1, resizeMode: 'contain'}}
-                                            source={{ uri: item.uri}}
-                                        />
-                                        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                                            <Text style={{color:'white'}}>Uploaded at: {item.timestamp}</Text>
-                                            <Text onPress={()=> {navigation.navigate('Map', { showlat: lat, showlong: long})}} style={{color: 'white'}}>View In Map</Text>
-                                            <Text style={{color:'white'}}>{indexSelected+1}/{artworklist.length}</Text>      
-                                        </View>
-                                        <View>
-                                            <Pagination
-                                                inactiveDotColor='gray'
-                                                dotColor={'orange'}
-                                                activeDotIndex={indexSelected}
-                                                dotsLength={artworklist.length}
-                                                animatedDuration={150}
-                                                inactiveDotScale={1}
-                                            />
-                                        </View> 
-                                    </ScrollView>          
-                                </>
-                            )}
-                        />
-                        {artworklist.length>1?
-                        <FlatlistView artworklist={artworklist}/>
-                        :
-                        <></>}
-                    </View>
-                </View>
-            </>
-        )
+            <View style={styles.container}>
+                <FlatList
+                    data = {artworklist}
+                    renderItem={renderItems}
+                    keyExtractor = {(item)=> item.index}
+                />
+            </View>
+        );
     }
-    
+
+
     //check if no params were passed as props to stack navigator
     //TODO: maybe type check these as well?
     if(!lat || !long){
@@ -205,7 +118,7 @@ const LocationDetailScreen = ( {route, navigation })=>{
     return(
         <>
             {artworks?
-                <ShowArt artworks={artworks}/>
+                <ShowArt2 artworks={artworks}/>
             :
             <>
                 <View style={styles.container}>
@@ -223,14 +136,30 @@ export default LocationDetailScreen
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-        padding: 10,
+        // alignItems: "center",
+        // justifyContent: "center",
+        // padding: 10,
+        backgroundColor: '#F5FCFF'
+
     },
     artworkImage:{
-        width: 400,
-        height: 300,
-        // height: "100%",
-        resizeMode: "cover",
+        // width: 400,
+        // height: 300,
+        // // height: "100%",
+        // resizeMode: "cover",
+        width,
+        height: 550,
+        resizeMode: 'contain',
+        marginVertical: 10,
+    },
+    imageFooter:{
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        height: 50,
+        paddingHorizontal: 20,
+    },
+    imageFooterText:{
+
     }
+
 });
