@@ -1,22 +1,31 @@
 import React, {useState, useEffect, useRef} from 'react'
 import { StyleSheet, ActivityIndicator, Text, View, Dimensions, FlatList, Image, ScrollView, TouchableOpacity, Linking} from 'react-native'
-import {Button, Divider, Input } from "react-native-elements";
-import Carousel, { Pagination } from 'react-native-snap-carousel';
 import ImageViewer from 'react-native-image-zoom-viewer';
 import { supabase } from "./../supabase-service";
 import { SUPABASE_URL } from "react-native-dotenv"
-import { useNavigation } from '@react-navigation/native';
-import { ImageBackground } from 'react-native-web';
 
 const {width, height } = Dimensions.get('window');
 const SPACING = 10;
 const THUMB_SIZE = 80;
+const viewConfigRef = {viewAreaCoveragePercentThreshold: 95};
 
 const LocationDetailScreen = ( {route, navigation })=>{
     const { lat, long } = route.params;
     const [artworks, setArtworks] = useState(null);
     const [dbError, setdbError] = useState(false);
-    const [activeIndex, setActiveIndex] = useState(0);
+    const [currentIndex, setCurrentIndex] = useState(0);
+
+    const onViewRef = useRef(({changed})=>{
+        if(changed[0].isViewable){
+            setCurrentIndex(changed[0].index)
+        }
+    })
+
+    const scrollToIndex = (index)=>{
+        flatListRef.current?.scrollToIndex({animated: true, index: index})
+    }
+    let flatListRef = useRef();
+
 
     useEffect(()=>{
         fetchArtwork()
@@ -32,7 +41,7 @@ const LocationDetailScreen = ( {route, navigation })=>{
                 .from('artworkdata')
                 .select('*')                
                 .match({lat: lat, long: long})
-                .order('timestamp', {ascending: true})
+                .order('timestamp', {ascending: false})
             if(error){
                 console.log("DB Fetch Error");
                 setdbError(true);
@@ -65,7 +74,10 @@ const LocationDetailScreen = ( {route, navigation })=>{
 
     const renderItems = ({item})=>{
         return (
-            <TouchableOpacity onPress = {()=> console.log('clicked')}>
+            <TouchableOpacity 
+                onPress = {()=> console.log('clicked')}
+                activeOpacity={1}
+            >
                 <Image 
                     source={{uri: item.uri}}
                     style={styles.artworkImage}
@@ -74,35 +86,20 @@ const LocationDetailScreen = ( {route, navigation })=>{
                     <Text style={styles.imageFooterText}>
                         {item.timestamp.toLocaleString("en-US")}
                     </Text>
-                    <Text onPress={()=> {navigation.navigate('Map', { showlat: lat, showlong: long})}} style={{color: 'blue'}}>View In Map</Text>
-
+                    <Text style={{color: 'orange'}}>{currentIndex+1}/{artworks.length}</Text>
+                    <Text onPress={()=> {navigation.navigate('Map', { showlat: lat, showlong: long})}} style={{color: 'aqua'}}>View In Map</Text>
                 </View>
             </TouchableOpacity>
         );
     };
     
 
-    const ShowArt2=(props)=>{
-        let artworklist=props.artworks;
-        console.log("showArt render")
-        return(
-            <View style={styles.container}>
-                <FlatList
-                    data = {artworklist}
-                    renderItem={renderItems}
-                    keyExtractor = {(item)=> item.index}
-                />
-            </View>
-        );
-    }
-
-
     //check if no params were passed as props to stack navigator
-    //TODO: maybe type check these as well?
+    //TODO: consider maybe type check these as well?
     if(!lat || !long){
         return(
             <View style={styles.container}>
-                <Text>Error: No location params</Text>
+                <Text style={{color: 'white'}}>Error: No location params</Text>
             </View>    
         )
     }
@@ -110,7 +107,7 @@ const LocationDetailScreen = ( {route, navigation })=>{
     if(dbError){
         return(
             <View style={styles.container}>
-                <Text>Error accessing database.</Text>
+                <Text style={{color: 'white'}}>Error accessing database.</Text>
             </View>
         )
     }
@@ -118,7 +115,42 @@ const LocationDetailScreen = ( {route, navigation })=>{
     return(
         <>
             {artworks?
-                <ShowArt2 artworks={artworks}/>
+            <View style={styles.container}>
+                <FlatList
+                    data = {artworks}
+                    renderItem={renderItems}
+                    keyExtractor = {(item)=> item.index}
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    pagingEnabled
+                    ref={(ref)=>{
+                        flatListRef.current = ref;
+                    }}
+                    style={styles.carousel}
+                    viewabilityConfig={viewConfigRef}
+                    onViewableItemsChanged={onViewRef.current}
+                    initialScrollIndex={currentIndex}  
+
+                    onScrollToIndexFailed={info => {
+                        const wait = new Promise(resolve => setTimeout(resolve, 500));
+                        wait.then(() => {
+                          flatListRef.current?.scrollToIndex({ index: info.index, animated: true });
+                        })}}
+                />
+                <View style={styles.pageDotView}>
+                    {artworks.map(({}, index)=>(
+                        <TouchableOpacity key={index.toString()}
+                        style={[
+                            styles.pageCircle,
+                            { backgroundColor: index == currentIndex? 'white' : 'grey'},
+                        ]}
+                        onPress = {()=> scrollToIndex(index)}
+                        />
+                    ))}
+
+                    
+                </View>
+            </View>                
             :
             <>
                 <View style={styles.container}>
@@ -136,30 +168,50 @@ export default LocationDetailScreen
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        // alignItems: "center",
-        // justifyContent: "center",
+        alignItems: "center",
+        justifyContent: "center",
         // padding: 10,
-        backgroundColor: '#F5FCFF'
+        // backgroundColor: '#F5FCFF'
+        backgroundColor: 'black'
 
     },
     artworkImage:{
+        marginTop: 5,
         // width: 400,
         // height: 300,
         // // height: "100%",
         // resizeMode: "cover",
         width,
-        height: 550,
+        height: 500,
         resizeMode: 'contain',
-        marginVertical: 10,
+        // marginVertical: 10,
     },
     imageFooter:{
         flexDirection: 'row',
         justifyContent: 'space-between',
-        height: 50,
+        height: 20,
         paddingHorizontal: 20,
+        marginTop: 10,
     },
     imageFooterText:{
-
+        color: 'white'
+    },
+    carousel:{
+        maxHeight: 900
+    },
+    pageDotView:{
+        flexDirection: 'row',
+        justifyContent: 'center',
+        paddingBottom: 30
+        // marginVertical: 20,
+    },
+    pageCircle:{
+        width: 10,
+        height: 10,
+        backgroundColor: 'grey',
+        borderRadius: 50,
+        marginHorizontal: 5
     }
+
 
 });
