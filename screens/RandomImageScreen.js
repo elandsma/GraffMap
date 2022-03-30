@@ -33,7 +33,7 @@ const RandomImageScreen = ( {navigation })=>{
             }
             const randomLoc = data[Math.floor(Math.random() * data.length)];
             setRandomLocation(randomLoc);
-            console.log("Random Found");
+            console.log("Random Found: ", randomLoc);
         }
         catch (e){
             console.log("Error: ", e);
@@ -53,7 +53,7 @@ const RandomImageScreen = ( {navigation })=>{
         <View style={styles.container}>
             {!randomLocation ? 
                 <>
-                    <Text>Randomizing Location....{"/n"}</Text>
+                    <Text>Randomizing Location....{"\n"}</Text>
                     <ActivityIndicator size="large" color="#00ff00" />
                 </>
                 :
