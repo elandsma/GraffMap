@@ -86,7 +86,7 @@ const AboutScreen = ( { navigation } )=>{
       
 
     return(
-        <SafeAreaView style={{flex:1}}>
+        <SafeAreaView style={{flex:1, backgroundColor: '#F5FCFF'}}>
         <View style={styles.container}>
             <ScrollView style={{paddingTop: 40}}>
                 <View style={{paddingBottom: 40}}>
