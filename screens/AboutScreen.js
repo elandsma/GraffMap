@@ -14,9 +14,14 @@ const AboutScreen = ( { navigation } )=>{
     const CONTENT = [
         {
             title: 'Motivation',
-            content: 
-                'This application was developed as a senior capstone project for the Computer Science program at the University of North Carolina at Asheville. Inspired by rich graffiti culture here in North Carolina and the ever-changing landscape of various locations, GraffMap is intended to enable users to preserve chronological snapshots in time of artwork that is otherwise ephemeral by nature.'
-        },
+            content:
+                <> 
+                <Text>GraffMap was inspired by rich graffiti culture here in North Carolina and the ever-changing landscape of various locations. {'\n'}GraffMap is intended to enable users to preserve chronological snapshots in time of artwork that is otherwise ephemeral by nature.</Text>
+                <Text>{"\n"}{"\n"}Logo by 
+                    <Text style={{color: 'blue'}} onPress={()=>Linking.openURL('instagram://user?username=lord.melto.ftk')}> @lord.melto.ftk</Text>
+                </Text>
+                </> 
+            },
         {
             title: 'Tech',
             content:
@@ -32,7 +37,7 @@ const AboutScreen = ( { navigation } )=>{
                     <Text>{"\n"}{"\n"}</Text>
                     <Text style={{color: 'blue'}} onPress={()=> {navigation.navigate('Terms and Conditions')}} >Terms & Conditions</Text>
                     <Text>{"\n"}</Text>
-                    <Text>{"\n"}{"\n"}tldr: Don't break the law. Don't abuse this app. </Text>
+                    <Text>{"\n"}{"\n"}tldr: be excellent to each other</Text>
                 </>
         },
         {
@@ -117,7 +122,7 @@ const AboutScreen = ( { navigation } )=>{
                 </View>
             </ScrollView>
             <View>
-                <Text style={{textAlign: "center",}}>Current Version: 3/22/22 5pm Beta</Text>
+                <Text style={{textAlign: "center",}}>Version: Pre-release Beta 1.0. April 4, 2022. </Text>
 
                 <Text style={styles.quote}>{"\n"}
                     "Imagine... a city where everybody could draw whatever they liked. Where every street was awash with a million colours and little phrases.
