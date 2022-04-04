@@ -24,7 +24,6 @@ const MapScreen = ( { route, navigation } )=>{
      * Fetch all artwork items from database.
      */
     async function fetchMarkers(){
-        console.log("fetchMarkers()")
         let { data, error } = await supabase
             .from('artworkdata')
             .select('*')
@@ -42,7 +41,6 @@ const MapScreen = ( { route, navigation } )=>{
                     myMap.set(artwork.lat, arr);
                     uniques.push(artwork);
                     let latlong = String(artwork.lat).concat(String(artwork.long))
-                    console.log(latlong)
                     piecesPerLocation.set(latlong, 1)
                 }
                 else{ 
@@ -60,7 +58,6 @@ const MapScreen = ( { route, navigation } )=>{
                     }
                 }
             }
-            console.log("MapSize: ", piecesPerLocation.size)
             setPiecesPerLoc(piecesPerLocation);
             setArtworkdata(uniques);
             console.log("Unique Locations: ", uniques.length)
@@ -79,7 +76,6 @@ const MapScreen = ( { route, navigation } )=>{
      * Else, use a random artwork location from database.
      */
     async function getInitialLocation(){
-            console.log("getInitialLocation()")
             if(route.params){
                 console.log("has route")
                     setInitialMapLocation({
@@ -150,9 +146,9 @@ const MapScreen = ( { route, navigation } )=>{
             >                
                 { artworkdata.map((marker)=>{
                     let latlong = String(marker.lat).concat(String(marker.long))
-                    console.log("Placing marker at: ", latlong)
+                    // console.log("Placing marker at: ", latlong)
                     let prev = piecesPerLoc.get(latlong);
-                    console.log("Pieces here: ", prev);
+                    // console.log("Pieces here: ", prev);
                     let imageurl = SUPABASE_URL +"/storage/v1/object/public/"+marker.uri
                     // console.log(imageurl)
                     let msg = "View Detail ("
@@ -163,7 +159,6 @@ const MapScreen = ( { route, navigation } )=>{
                             key={marker.uuid}
                             pinColor="purple"
                         >
-                        {/* // https://vyqmzznxlhwbcrguaepk.supabase.in/storage/v1/object/public/graffimages/test1.jpg  */}
                             <Callout tooltip>
                                 <View>
                                     <View style={styles.bubble}>
