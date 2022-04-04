@@ -21,9 +21,11 @@ import { Header } from './components/Header';
 const Stack = createNativeStackNavigator();
 
 const globalScreenOptions ={
-    headerStyle: { backgroundColor: "#2C6BED"},   //header bgcolor
-    headerTitleStyle: {color: "white"},           //header text color
-    headerTintColor: "white",                     //header icon color 
+    headerStyle: { backgroundColor: '#5d8aa6', borderBottomWidth: 0 },  
+    headerTitleStyle: {color: "#5d8aa6"},           //header text color
+    headerTintColor: "#03395b",                     //header icon color 
+    headerShadowVisible: false
+    
 }
 
 function LogoTitle(){
@@ -71,10 +73,28 @@ export default function App() {
                     options={{title: "Home", headerShown: false}}
                 />
                 <Stack.Screen name="About" component={AboutScreen}/>
-                <Stack.Screen name="Add Image" component={AddImageScreen}/>
+                <Stack.Screen name="Add Image" 
+                    component={AddImageScreen}
+                    options={{
+                        headerStyle:{
+                            backgroundColor: 'black'
+                        },
+                        headerTitleStyle:{ color: 'black'},
+                        headerTintColor: 'white'
+                    }}
+                    />
                 <Stack.Screen name="Map" component={MapScreen}/>
                 <Stack.Screen name="Random" component={RandomImageScreen} options={{title: "Random Location"}}/>
-                <Stack.Screen name="Location Detail" component={LocationDetailScreen}/>
+                <Stack.Screen name="Location Detail" 
+                    component={LocationDetailScreen}
+                    options={{
+                        headerStyle:{
+                            backgroundColor: 'black'
+                        },
+                        headerTitleStyle:{ color: 'black'},
+                        headerTintColor: '#5d8aa6'
+                    }}
+                />
                 <Stack.Screen name="Privacy Policy" component={PrivacyPolicy}/>
                 <Stack.Screen name="Terms and Conditions" component={TermsConditions}/>
 
