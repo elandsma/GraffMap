@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import { Platform, StyleSheet, Text, View, KeyboardAvoidingView, TouchableOpacity, Alert, ImageBackground, Image, ActivityIndicator} from 'react-native'
+import { Platform, StyleSheet, Text, View, KeyboardAvoidingView, TouchableOpacity, Alert, ImageBackground, Image, ActivityIndicator, Touchable} from 'react-native'
 import {Button, Input } from "react-native-elements";
 import  Modal  from "react-native-modal";
 import {StatusBar} from 'expo-status-bar';
@@ -9,6 +9,8 @@ import { supabase } from "./../supabase-service";
 import { SUPABASE_URL } from "react-native-dotenv"
 import UploadingModal from '../components/UploadingModal';
 import Tags from "react-native-tags";
+import { StackActions } from '@react-navigation/native';
+
 
 let camera = Camera
 const AddImageScreen = ( { navigation } )=>{
@@ -476,20 +478,29 @@ const AddImageScreen = ( { navigation } )=>{
                                     </>
                                     :
                                     <>
-                                        <Text>
+                                        <Text style={{ fontSize: 15 }}>
                                             Success!{"\n"}
                                         {/* {addArtworkResultDisplay} */}
                                         </Text>
-                                        <TouchableOpacity
-                                            style={[modalStyles.button, modalStyles.buttonClose]}
-                                            onPress={() => navigation.navigate('Home')}
-                                        >
-                                            <Text style={modalStyles.textStyle}>Home</Text>
-                                            {/* Todo: Go to display of this photo on map or in display view? As opposed to just going home*/}
-                                            {/* Also potentially add multiple options here. */}
-                                        </TouchableOpacity>
-                                        
-                                        
+                                        <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
+                                            <TouchableOpacity
+                                                style={[modalStyles.button, modalStyles.buttonClose]}
+                                                onPress={() => navigation.navigate('Home')}
+                                            >
+                                                <Text style={modalStyles.textStyle}>Go Home</Text>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity
+                                                style={[modalStyles.button, modalStyles.buttonClose]}
+                                                onPress={() => {
+                                                    setShowUploadingModal(false);
+                                                    navigation.dispatch(StackActions.popToTop());
+                                                    navigation.navigate('Map', { showlat: dbInsertResult.lat, showlong: dbInsertResult.long})
+                                                }
+                                                }
+                                            >
+                                                <Text style={modalStyles.textStyle}>View In Map</Text>
+                                            </TouchableOpacity>
+                                        </View>                                                                                                                        
 
                                         {/* 
                                         <Text>{"\n"}</Text>
@@ -499,7 +510,6 @@ const AddImageScreen = ( { navigation } )=>{
                                         >
                                             <Text style={modalStyles.textStyle}>Add Attribute Tags</Text>
                                         </TouchableOpacity> */}
-
 
                                     </>
                                 }
@@ -655,13 +665,15 @@ const modalStyles = StyleSheet.create({
       button: {
         borderRadius: 20,
         padding: 10,
-        elevation: 2
+        elevation: 2,
+        marginHorizontal: 10
       },
       buttonOpen: {
         backgroundColor: "#F194FF",
       },
       buttonClose: {
         backgroundColor: '#045a8f',
+        marginBottom: 5
       },
       textStyle: {
         color: "white",
