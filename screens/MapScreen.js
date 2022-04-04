@@ -10,6 +10,7 @@ const MapScreen = ( { route, navigation } )=>{
     const [errorMsg, setErrorMsg] = useState(null);
     const [initialMapLocation, setInitialMapLocation] = useState(null);
     const [artworkdata, setArtworkdata] = useState([]);
+    const [piecesPerLoc, setPiecesPerLoc] = useState(new Map());
 
     useEffect(()=>{
         const doStates = async() => {
@@ -34,20 +35,33 @@ const MapScreen = ( { route, navigation } )=>{
             //Items are already sorted when fetched from db, so we end up only the most recent item from each unique location.
             let uniques = [];
             let myMap = new Map();
+            let piecesPerLocation = new Map();
             for ( const artwork of data ){
                 if(!myMap.has(artwork.lat)){
                     const arr = [artwork.long];
                     myMap.set(artwork.lat, arr);
                     uniques.push(artwork);
+                    let latlong = String(artwork.lat).concat(String(artwork.long))
+                    console.log(latlong)
+                    piecesPerLocation.set(latlong, 1)
                 }
                 else{ 
                     const arr = myMap.get(artwork.lat);
                     if(!arr.includes(artwork.long)){
                         arr.push(artwork.long);
                         uniques.push(artwork);
+                        let latlong = String(artwork.lat).concat(String(artwork.long))
+                        piecesPerLocation.set(latlong, 1)
+                    }
+                    else{
+                        let latlong = String(artwork.lat).concat(String(artwork.long))
+                        let prev = piecesPerLocation.get(latlong);
+                        piecesPerLocation.set(latlong, prev+1);
                     }
                 }
             }
+            console.log("MapSize: ", piecesPerLocation.size)
+            setPiecesPerLoc(piecesPerLocation);
             setArtworkdata(uniques);
             console.log("Unique Locations: ", uniques.length)
             return true;
@@ -125,8 +139,9 @@ const MapScreen = ( { route, navigation } )=>{
         )
     }
 
-    return (
-        <>        
+    
+    return (    
+        <> 
         <View style={styles.container}>
             <MapView
                 style={styles.map}
@@ -134,8 +149,14 @@ const MapScreen = ( { route, navigation } )=>{
                 // provider={PROVIDER_GOOGLE}
             >                
                 { artworkdata.map((marker)=>{
+                    let latlong = String(marker.lat).concat(String(marker.long))
+                    console.log("Placing marker at: ", latlong)
+                    let prev = piecesPerLoc.get(latlong);
+                    console.log("Pieces here: ", prev);
                     let imageurl = SUPABASE_URL +"/storage/v1/object/public/"+marker.uri
                     // console.log(imageurl)
+                    let msg = "View Detail ("
+                    msg = msg.concat(prev).concat(')');
                     return(
                         <Marker
                             coordinate={{ latitude: Number(marker.lat), longitude: Number(marker.long)}}
@@ -151,8 +172,8 @@ const MapScreen = ( { route, navigation } )=>{
                                             source={{uri: imageurl}}
                                             // resizeMode={'cover'}
                                         />
-
-                                    <Button title='View Detail' 
+                                        
+                                    <Button title={msg}
                                         onPress={()=> {navigation.navigate('Location Detail', { lat: marker.lat, long: marker.long})}}
                                     />
                                     </View>
