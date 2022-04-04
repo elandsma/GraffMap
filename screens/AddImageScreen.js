@@ -246,7 +246,7 @@ const AddImageScreen = ( { navigation } )=>{
         return(
             <KeyboardAvoidingView behavior='padding' style={styles.container}>
                 <Text>{displayMessage}{"\n"}{"\n"} </Text> 
-                <ActivityIndicator size="large" color="#00ff00" />       
+                <ActivityIndicator size="large" color="white" />       
             </KeyboardAvoidingView>
         )
     }
@@ -373,27 +373,28 @@ const AddImageScreen = ( { navigation } )=>{
                             // backgroundColor: '#fff',
                             justifyContent: 'center',
                             alignItems: 'center',
-                            backgroundColor: '#F5FCFF'
+                            backgroundColor: '#5d8aa6'
                         }}
                     >
                         <TouchableOpacity
                             onPress={__startCamera}
                             style={{
-                                width: 130,
-                                borderRadius: 10,
-                                backgroundColor: '#2C6BED',
+                                width: 150,
+                                borderRadius: 25,
+                                backgroundColor: '#045a8f',
                                 // #14274e
                                 flexDirection: 'row',
                                 justifyContent: 'center',
                                 alignItems: 'center',
-                                height: 40
+                                height: 48
                             }}
                         >
                             <Text
                                 style={{
                                     color: '#fff',
                                     fontWeight: 'bold',
-                                    textAlign: 'center'
+                                    textAlign: 'center',
+                                    fontSize: 18
                                 }}
                             >
                                 Open Camera
@@ -403,7 +404,7 @@ const AddImageScreen = ( { navigation } )=>{
                     </View>
                 )
             }
-            <StatusBar style="auto" />
+            {/* <StatusBar style="auto" /> */}
         
             {/* Potential TODO: Maybe make this modal an imported component */}
             <Modal
@@ -422,7 +423,7 @@ const AddImageScreen = ( { navigation } )=>{
                         <>
                             <Text style={modalStyles.modalText}>Saving photo...</Text>
                             {/* <Text>{capturedImage.uri}</Text> */}
-                            <ActivityIndicator size="large" color="#00ff00" />
+                            <ActivityIndicator size="large" color="white" />
                         </>
                         :
                         <>
@@ -430,8 +431,7 @@ const AddImageScreen = ( { navigation } )=>{
                             <>
                                 {addAttributesModal?
                                     <>
-                                        <Text>Type attributes in the box below. fAttributes</Text>
-
+                                        <Text>Type attributes in the box below.</Text>
 
                                     <Tags
                                         initialText=""
@@ -613,7 +613,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: '#F5FCFF'
+        backgroundColor: '#5d8aa6'
 
         // padding: 10,
     },
@@ -639,7 +639,7 @@ const modalStyles = StyleSheet.create({
       },
       modalView: {
         margin: 20,
-        backgroundColor: "white",
+        backgroundColor: '#66afdd',
         borderRadius: 20,
         padding: 35,
         alignItems: "center",
@@ -661,7 +661,7 @@ const modalStyles = StyleSheet.create({
         backgroundColor: "#F194FF",
       },
       buttonClose: {
-        backgroundColor: "#2196F3",
+        backgroundColor: '#045a8f',
       },
       textStyle: {
         color: "white",
@@ -672,18 +672,11 @@ const modalStyles = StyleSheet.create({
         marginBottom: 15,
         textAlign: "center"
       },
-      container: {
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-        padding: 10,
-        backgroundColor: '#F5FCFF'
-    },
     container: {
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
         padding: 10,
-        backgroundColor: '#F5FCFF'
+        backgroundColor: '#5d8aa6'
     },
 });
