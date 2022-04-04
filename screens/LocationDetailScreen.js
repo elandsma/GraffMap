@@ -75,7 +75,7 @@ const LocationDetailScreen = ( {route, navigation })=>{
         items.push(item.uri)
         return (
             <>
-            <View style={{justifyContent: 'space-between'}}>
+            <View style={{justifyContent: 'space-evenly'}}>
                 <View>
                 <Lightbox
                     swipeToDismiss={true}
@@ -114,7 +114,7 @@ const LocationDetailScreen = ( {route, navigation })=>{
                         {item.timestamp.toLocaleString("en-US")}
                     </Text>
                     <Text style={{color: 'orange', fontSize: 15}}>{currentIndex+1}/{artworks.length}</Text>
-                    <Text onPress={()=> {navigation.navigate('Map', { showlat: lat, showlong: long})}} style={{color: 'aqua', fontSize: 16}}>View In Map</Text>
+                    <Text onPress={()=> {navigation.navigate('Map', { showlat: lat, showlong: long})}} style={{color: '#5d8aa6', fontSize: 16}}>View In Map</Text>
                 </View>
             </View>
             </>
@@ -181,7 +181,7 @@ const LocationDetailScreen = ( {route, navigation })=>{
             <>
                 <View style={styles.container}>
                     <Text>Fetching Artwork...{"\n"}{"\n"}</Text>
-                    <ActivityIndicator size="large" color="#00ff00"/>
+                    <ActivityIndicator size="large" color="white"/>
                 </View>
             </>
         }
@@ -219,8 +219,8 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         height: 20,
         paddingHorizontal: 20,
-        marginTop: 10,
-        marginBottom: 3,
+        // marginTop: 10,
+        // marginBottom: 3,
         
     },
     imageFooterText:{
