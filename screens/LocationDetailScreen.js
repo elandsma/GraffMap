@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useRef} from 'react'
-import { StyleSheet, ActivityIndicator, Text, View, Dimensions, FlatList, Image, ScrollView, TouchableOpacity, Linking} from 'react-native'
-import ImageViewer from 'react-native-image-zoom-viewer';
+import { StyleSheet, ActivityIndicator, Text, View, Dimensions, FlatList, Image, ScrollView, TouchableOpacity, Animated, Linking, Modal} from 'react-native'
+import Lightbox from 'react-native-lightbox-v2';
 import { supabase } from "./../supabase-service";
 import { SUPABASE_URL } from "react-native-dotenv"
 
@@ -25,7 +25,6 @@ const LocationDetailScreen = ( {route, navigation })=>{
         flatListRef.current?.scrollToIndex({animated: true, index: index})
     }
     let flatListRef = useRef();
-
 
     useEffect(()=>{
         fetchArtwork()
@@ -71,25 +70,54 @@ const LocationDetailScreen = ( {route, navigation })=>{
         }
     }
 
-
     const renderItems = ({item})=>{
+        let items = []
+        items.push(item.uri)
         return (
-            <TouchableOpacity 
-                onPress = {()=> console.log('clicked')}
-                activeOpacity={1}
-            >
-                <Image 
-                    source={{uri: item.uri}}
-                    style={styles.artworkImage}
-                />
+            <>
+            <View style={{justifyContent: 'space-between'}}>
+                <View>
+                <Lightbox
+                    swipeToDismiss={true}
+                    // activeProps={{ style:{objectFit: 'cover'} }}
+                    renderContent={()=>{
+                        return(
+                            <ScrollView maximumZoomScale={5} 
+                                scrollEnabled={true} minimumZoomScale={1} showsHorizontalScrollIndicator={false} 
+                                showsVerticalScrollIndicator={false}
+                            >
+                                <Image 
+                                    source={{uri: item.uri}}
+                                    style={{
+                                        maxWidth: width,
+                                        height: height,
+                                        marginTop: 10,
+                                        aspectRatio: 1,
+                                        resizeMode: 'contain',
+                                        // marginVertical: 10,
+                                        alignSelf: 'center'
+                                    }}
+                                /> 
+                            </ScrollView>
+                        )
+                    }}
+                >   
+                    
+                    <Image 
+                        source={{uri: item.uri}}
+                        style={styles.artworkImage}
+                    />                    
+                </Lightbox>
+                </View>
                 <View style={styles.imageFooter}>
                     <Text style={styles.imageFooterText}>
                         {item.timestamp.toLocaleString("en-US")}
                     </Text>
-                    <Text style={{color: 'orange'}}>{currentIndex+1}/{artworks.length}</Text>
-                    <Text onPress={()=> {navigation.navigate('Map', { showlat: lat, showlong: long})}} style={{color: 'aqua'}}>View In Map</Text>
+                    <Text style={{color: 'orange', fontSize: 15}}>{currentIndex+1}/{artworks.length}</Text>
+                    <Text onPress={()=> {navigation.navigate('Map', { showlat: lat, showlong: long})}} style={{color: 'aqua', fontSize: 16}}>View In Map</Text>
                 </View>
-            </TouchableOpacity>
+            </View>
+            </>
         );
     };
     
@@ -115,7 +143,8 @@ const LocationDetailScreen = ( {route, navigation })=>{
     return(
         <>
             {artworks?
-            <View style={styles.container}>
+            <View style={styles.container}>                
+                <View style={{flex: 13}}>
                 <FlatList
                     data = {artworks}
                     renderItem={renderItems}
@@ -126,17 +155,16 @@ const LocationDetailScreen = ( {route, navigation })=>{
                     ref={(ref)=>{
                         flatListRef.current = ref;
                     }}
-                    style={styles.carousel}
                     viewabilityConfig={viewConfigRef}
                     onViewableItemsChanged={onViewRef.current}
                     initialScrollIndex={currentIndex}  
-
                     onScrollToIndexFailed={info => {
                         const wait = new Promise(resolve => setTimeout(resolve, 500));
                         wait.then(() => {
                           flatListRef.current?.scrollToIndex({ index: info.index, animated: true });
                         })}}
                 />
+                </View>
                 <View style={styles.pageDotView}>
                     {artworks.map(({}, index)=>(
                         <TouchableOpacity key={index.toString()}
@@ -146,9 +174,7 @@ const LocationDetailScreen = ( {route, navigation })=>{
                         ]}
                         onPress = {()=> scrollToIndex(index)}
                         />
-                    ))}
-
-                    
+                    ))} 
                 </View>
             </View>                
             :
@@ -169,22 +195,24 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: "center",
-        justifyContent: "center",
+        justifyContent: "space-between",
         // padding: 10,
         // backgroundColor: '#F5FCFF'
-        backgroundColor: 'black'
+        backgroundColor: 'black',
+        flexDirection: "column"
 
     },
     artworkImage:{
-        marginTop: 5,
+        // marginTop: 5,
         // width: 400,
         // height: 300,
         // // height: "100%",
-        // resizeMode: "cover",
         width,
-        height: 500,
+        height: undefined,
+        aspectRatio: 1,
         resizeMode: 'contain',
         // marginVertical: 10,
+        alignSelf: 'center',
     },
     imageFooter:{
         flexDirection: 'row',
@@ -192,18 +220,21 @@ const styles = StyleSheet.create({
         height: 20,
         paddingHorizontal: 20,
         marginTop: 10,
+        marginBottom: 3,
+        
     },
     imageFooterText:{
-        color: 'white'
+        color: 'white',
     },
     carousel:{
-        maxHeight: 900
     },
     pageDotView:{
         flexDirection: 'row',
         justifyContent: 'center',
-        paddingBottom: 30
+        paddingBottom: 30,
+        paddingTop: 5,
         // marginVertical: 20,
+        flex: 2
     },
     pageCircle:{
         width: 10,
