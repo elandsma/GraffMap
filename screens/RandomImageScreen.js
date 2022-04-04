@@ -53,13 +53,14 @@ const RandomImageScreen = ( {navigation })=>{
         <View style={styles.container}>
             {!randomLocation ? 
                 <>
-                    <Text>Randomizing Location....{"\n"}</Text>
-                    <ActivityIndicator size="large" color="#00ff00" />
+                    <Text style={{color: 'white'}}>
+                        Randomizing Location....{"\n"}</Text>
+                    <ActivityIndicator size="large" color="white" />
                 </>
                 :
                 <>
-                    <Text>
-                        Random Artwork Location Identified!{"\n"}
+                    <Text style={{color: 'white'}}>
+                        Random Artwork Location Identified!{"\n"}{"\n"}
                     </Text>
                     <TouchableOpacity style={styles.navButtonTouchable} onPress={()=> navigation.navigate('Location Detail', {lat: randomLocation.lat, long: randomLocation.long})} >
                         <Text style={styles.navButtonText}> Click To View</Text>
@@ -78,24 +79,23 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         padding: 10,
-        backgroundColor: '#F5FCFF'
-
+        backgroundColor: '#5d8aa6',
     },
     navButtonTouchable: {
-        width: 120,
-        borderRadius: 10,
-        backgroundColor: '#2C6BED',
+        width: 150,
+        borderRadius: 25,
+        backgroundColor: '#045a8f',
         // #14274e
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        height: 40
+        height: 48
     },
     navButtonText: {
         color: '#fff',
         fontWeight: 'bold',
         textAlign: 'center',
         textAlignVertical: 'center',
-        fontSize: 16   
+        fontSize: 18  
     }
 });
