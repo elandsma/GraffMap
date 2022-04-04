@@ -65,7 +65,11 @@ export default function App() {
             <Stack.Navigator screenOptions={globalScreenOptions} >
                 {/* <Stack.Screen name="Home" component={HomeScreen}
                     options={{ headerTitle: (props) => <LogoTitle {...props}/>}} /> */}
-                <Stack.Screen name="Home" component={HomeScreen} options={{title: "Home"}}/>
+                <Stack.Screen 
+                    name="Home" 
+                    component={HomeScreen} 
+                    options={{title: "Home", headerShown: false}}
+                />
                 <Stack.Screen name="About" component={AboutScreen}/>
                 <Stack.Screen name="Add Image" component={AddImageScreen}/>
                 <Stack.Screen name="Map" component={MapScreen}/>
