@@ -91,13 +91,17 @@ const AboutScreen = ( { navigation } )=>{
       
 
     return(
-        <SafeAreaView style={{flex:1, backgroundColor: '#F5FCFF'}}>
-        <View style={styles.container}>
-            <ScrollView style={{paddingTop: 40}}>
-                <View style={{paddingBottom: 40}}>
-                    <Text style={{textAlign: 'center'}}>LOGO</Text>
+        <SafeAreaView style={{flexGrow:1, backgroundColor: '#5d8aa6', justifyContent: 'space-between'}}>
+        {/* <View style={styles.container}> */}
+            <ScrollView style={{paddingTop: 20}}>
+                <View style={{paddingBottom: 20, alignItems: 'center', justifyContent: 'center'}}>
+                    <Image
+                            source={require('../assets/gmLittle.png')}
+                            style={{width: 200, alignSelf: 'center', aspectRatio: 1, resizeMode: 'contain'}}
+                            // resizeMode={'cover'}
+                        />
                 </View>
-                <View style={{justifyContent: 'spaceBetween'}}>
+                <View style={{justifyContent: 'spaceBetween', marginBottom: 20}}>
                     <Accordion
                         activeSections={activeSections}
                         //for any default active section
@@ -120,17 +124,16 @@ const AboutScreen = ( { navigation } )=>{
                         //setting the state of active sections
                     />
                 </View>
+                <View>
+                    <Text style={{textAlign: "center", marginTop: 5}}>Version: Pre-release Beta 1.0. April 4, 2022. </Text>
+                    <Text style={styles.quote}>{"\n"}
+                        "Imagine... a city where everybody could draw whatever they liked. Where every street was awash with a million colours and little phrases.
+                        Where standing at a bus stop was never boring. A city that felt like a party where everyone was invited, not just the estate agents
+                        and barons of big business. Imagine a city like that and stop leaning against the wall - it's wet." {"\n"}-Banksy
+                    </Text>   
+                </View>
             </ScrollView>
-            <View>
-                <Text style={{textAlign: "center",}}>Version: Pre-release Beta 1.0. April 4, 2022. </Text>
-
-                <Text style={styles.quote}>{"\n"}
-                    "Imagine... a city where everybody could draw whatever they liked. Where every street was awash with a million colours and little phrases.
-                    Where standing at a bus stop was never boring. A city that felt like a party where everyone was invited, not just the estate agents
-                    and barons of big business. Imagine a city like that and stop leaning against the wall - it's wet." {"\n"}-Banksy
-                </Text>   
-            </View>
-        </View>
+        {/* </View> */}
         </SafeAreaView>
     )
 }
@@ -139,11 +142,12 @@ export default AboutScreen
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        // flex: 1,
         alignItems: "center",
         justifyContent: "center",
         padding: 10,
-        backgroundColor: '#F5FCFF'
+        // backgroundColor: '#F5FCFF'
+        backgroundColor: '#5d8aa6'
     },
     quote:{
         fontStyle: 'italic',
@@ -151,36 +155,36 @@ const styles = StyleSheet.create({
         fontSize: 12,
     },
     header: {
-        backgroundColor: '#F5FCFF',
+        backgroundColor: '#5d8aa6',
         padding: 10,
     },
     activeHeader: {
-        backgroundColor: '#F5FCFF',
+        backgroundColor: '#5d8aa6',
         padding: 10,
         fontWeight: 'bold',
         textDecorationLine: 'underline line-through'
     },
     activeHeaderText: {
-        backgroundColor: '#F5FCFF',
+        // backgroundColor: '#F5FCFF',
         // textDecorationLine: 'underline',
         fontWeight: 'bold',
     },
     headerText: {
         textAlign: 'center',
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: '500',
       },
     content: {
         padding: 20,
-        backgroundColor: '#fff',
+        backgroundColor: '#F5FCFF',
         borderRadius: 35,
         overflow: 'hidden',
     },
     active: {
-        backgroundColor: 'rgba(255,255,255,1)',
+        backgroundColor: '#F5FCFF',
     },
     inactive: {
-        backgroundColor: 'rgba(245,252,255,1)',
+        backgroundColor: '#5d8aa6',
     },
 
 });
