@@ -130,7 +130,7 @@ const MapScreen = ( { route, navigation } )=>{
         return(
             <View style={styles.container}>
                 <Text>Acquiring geolocation...{"\n"}{"\n"}</Text>
-                <ActivityIndicator size="large" color="#00ff00" />
+                <ActivityIndicator size="large" color="white" />
             </View>
         )
     }
@@ -157,7 +157,7 @@ const MapScreen = ( { route, navigation } )=>{
                         <Marker
                             coordinate={{ latitude: Number(marker.lat), longitude: Number(marker.long)}}
                             key={marker.uuid}
-                            pinColor="purple"
+                            pinColor="#03395b"
                         >
                             <Callout tooltip>
                                 <View>
@@ -186,7 +186,7 @@ const MapScreen = ( { route, navigation } )=>{
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: '#5d8aa6',
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     clickForDetailText:{
-        color: '#2C6BED'
+        color: '#03395b'
     }
 });
 
