@@ -101,8 +101,7 @@ const LocationDetailScreen = ( {route, navigation })=>{
                             </ScrollView>
                         )
                     }}
-                >   
-                    
+                >                      
                     <Image 
                         source={{uri: item.uri}}
                         style={styles.artworkImage}
@@ -121,7 +120,6 @@ const LocationDetailScreen = ( {route, navigation })=>{
         );
     };
     
-
     //check if no params were passed as props to stack navigator
     //TODO: consider maybe type check these as well?
     if(!lat || !long){
@@ -196,7 +194,6 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: "center",
         justifyContent: "space-between",
-        // padding: 10,
         // backgroundColor: '#F5FCFF'
         backgroundColor: 'black',
         flexDirection: "column"
@@ -204,9 +201,6 @@ const styles = StyleSheet.create({
     },
     artworkImage:{
         // marginTop: 5,
-        // width: 400,
-        // height: 300,
-        // // height: "100%",
         width,
         height: undefined,
         aspectRatio: 1,
@@ -233,7 +227,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         paddingBottom: 30,
         paddingTop: 5,
-        // marginVertical: 20,
         flex: 2
     },
     pageCircle:{
@@ -243,6 +236,4 @@ const styles = StyleSheet.create({
         borderRadius: 50,
         marginHorizontal: 5
     }
-
-
 });

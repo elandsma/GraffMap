@@ -1,6 +1,5 @@
 import React, {useState, useEffect} from 'react'
 import { StyleSheet, Text, View, Linking, TouchableOpacity, ActivityIndicator } from 'react-native'
-import {Button, Input, Image} from "react-native-elements";
 import { supabase } from "./../supabase-service";
 import { SUPABASE_URL } from "react-native-dotenv"
 import { useIsFocused } from '@react-navigation/native';
@@ -9,8 +8,6 @@ const RandomImageScreen = ( {navigation })=>{
     const [randomLocation, setRandomLocation] = useState(null);
     const [dbError, setdbError] = useState(false);
     const isFocused = useIsFocused();
-
-
 
     useEffect(()=>{
         setRandomLocation(null);

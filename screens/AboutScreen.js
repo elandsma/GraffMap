@@ -1,14 +1,9 @@
 import React, {useState, useEffect} from 'react'
 import { StyleSheet, Text, View, Linking, ScrollView, TouchableOpacity, SafeAreaView} from 'react-native'
 import {Button, Input, Image} from "react-native-elements";
-
-//import for the animation of Collapse and Expand
 import * as Animatable from 'react-native-animatable';
-//import for the collapsible/Expandable view
 import Collapsible from 'react-native-collapsible';
-//import for the Accordion view
 import Accordion from 'react-native-collapsible/Accordion';
-
 
 const AboutScreen = ( { navigation } )=>{
     const CONTENT = [
@@ -48,20 +43,16 @@ const AboutScreen = ( { navigation } )=>{
                 <Text style={{color: 'blue'}} onPress={()=>Linking.openURL('mailto:info@graffmap.net?subject=graffmap&body=')}>info@graffmap.net</Text>
                 </>
         },
-    ]
-    
-    
-    
+    ]  
     
     const [activeSections, setActiveSections] = useState([]);
     const [collapsed, setCollapsed] = useState(true);
     const setSections = (sections) => {
-        //setting up a active section state
         setActiveSections(sections.includes(undefined) ? [] : sections);
       };
     
       const renderHeader = (section, _, isActive) => {
-        //Accordion Header view
+        //Accordion Header
         return (
           <Animatable.View
             duration={400}
@@ -73,7 +64,7 @@ const AboutScreen = ( { navigation } )=>{
       };
 
       const renderContent = (section, _, isActive) => {
-        //Accordion Content view
+        //Accordion Content
         return (
           <Animatable.View
             duration={120}
@@ -86,9 +77,7 @@ const AboutScreen = ( { navigation } )=>{
             </Animatable.Text>
           </Animatable.View>
         );
-      };
-    
-      
+      };          
 
     return(
         <SafeAreaView style={{flexGrow:1, backgroundColor: '#5d8aa6', justifyContent: 'space-between'}}>
@@ -98,38 +87,28 @@ const AboutScreen = ( { navigation } )=>{
                     <Image
                             source={require('../assets/gmLittle.png')}
                             style={{width: 200, alignSelf: 'center', aspectRatio: 1, resizeMode: 'contain'}}
-                            // resizeMode={'cover'}
                         />
                 </View>
                 <View style={{justifyContent: 'spaceBetween', marginBottom: 20}}>
                     <Accordion
                         activeSections={activeSections}
-                        //for any default active section
                         sections={CONTENT}
-                        //title and content of accordion
                         touchableComponent={TouchableOpacity}
-                        //which type of touchable component you want
-                        //It can be the following Touchables
-                        //TouchableHighlight, TouchableNativeFeedback
-                        //TouchableOpacity , TouchableWithoutFeedback
-                        //expandMultiple={False}
-                        //Do you want to expand mutiple at a time or single at a time
+                        //expandMultiple={False}                        
                         renderHeader={renderHeader}
-                        //Header Component(View) to render
                         renderContent={renderContent}
-                        //Content Component(View) to render
                         duration={200}
                         //Duration for Collapse and expand
                         onChange={setSections}
-                        //setting the state of active sections
                     />
                 </View>
                 <View>
                     <Text style={{textAlign: "center", marginTop: 5}}>Version: Pre-release Beta 1.0. April 4, 2022. </Text>
                     <Text style={styles.quote}>{"\n"}
-                        "Imagine... a city where everybody could draw whatever they liked. Where every street was awash with a million colours and little phrases.
+                        "Some people are enraged, and some people are applauding. If there were a mission statement for graffiti, that would be it." {"\n"} ~Barry Mcgee
+                        {/* "Imagine... a city where everybody could draw whatever they liked. Where every street was awash with a million colours and little phrases.
                         Where standing at a bus stop was never boring. A city that felt like a party where everyone was invited, not just the estate agents
-                        and barons of big business. Imagine a city like that and stop leaning against the wall - it's wet." {"\n"}-Banksy
+                        and barons of big business. Imagine a city like that and stop leaning against the wall - it's wet." {"\n"}-Banksy */}
                     </Text>   
                 </View>
             </ScrollView>

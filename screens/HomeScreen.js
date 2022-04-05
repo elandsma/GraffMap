@@ -1,18 +1,15 @@
 import React from 'react'
 import { StyleSheet, Text, TouchableOpacity, View} from 'react-native'
-import {Button, Input, Image} from "react-native-elements";
+import {Button, Image} from "react-native-elements";
 
 const HomeScreen = ( {navigation })=>{
-
     return(
         <>
         <View style={styles.container}>    
             <Image
                 source={require('../assets/GraffMapBig.png')}
                 style={{width: 300, alignSelf: 'center', aspectRatio: 1, resizeMode: 'contain'}}
-                            // resizeMode={'cover'}
             />
-
             <TouchableOpacity style={styles.homeNavButtonTouchable} onPress={()=> navigation.navigate('Map')} >
                 <Text style={styles.homeNavButtonText}> Map</Text>
             </TouchableOpacity>
@@ -37,7 +34,6 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
-        // padding: 10,
         backgroundColor: '#5d8aa6'
     },
     homeNavButtonTouchable:{

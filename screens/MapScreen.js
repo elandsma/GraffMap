@@ -135,7 +135,6 @@ const MapScreen = ( { route, navigation } )=>{
         )
     }
 
-    
     return (    
         <> 
         <View style={styles.container}>
@@ -166,8 +165,7 @@ const MapScreen = ( { route, navigation } )=>{
                                             style={styles.calloutThumbnail}
                                             source={{uri: imageurl}}
                                             // resizeMode={'cover'}
-                                        />
-                                        
+                                        />                                        
                                     <Button title={msg}
                                         onPress={()=> {navigation.navigate('Location Detail', { lat: marker.lat, long: marker.long})}}
                                     />
