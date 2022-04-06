@@ -11,10 +11,11 @@ const AboutScreen = ( { navigation } )=>{
             title: 'Motivation',
             content:
                 <> 
-                <Text>GraffMap was inspired by rich graffiti culture here in North Carolina and the ever-changing landscape of various locations. {'\n'}GraffMap is intended to enable users to preserve chronological snapshots in time of artwork that is otherwise ephemeral by nature.</Text>
+                <Text>GraffMap was inspired by rich and diverse global street art culture, and the ever-changing landscape of various locations. {'\n'}{'\n'}GraffMap is intended to enable users to preserve chronological snapshots in time of artwork that is otherwise ephemeral in nature.</Text>
                 <Text>{"\n"}{"\n"}Logo by 
                     <Text style={{color: 'blue'}} onPress={()=>Linking.openURL('instagram://user?username=lord.melto.ftk')}> @lord.melto.ftk</Text>
                 </Text>
+                <Text>{"\n"}{"\n"}Developed with ❤️️ in Asheville, North Carolina, USA</Text>
                 </> 
             },
         {
@@ -102,11 +103,11 @@ const AboutScreen = ( { navigation } )=>{
                         onChange={setSections}
                     />
                 </View>
-                <View>
-                    <Text style={{textAlign: "center", marginTop: 5}}>Version: Pre-release Beta 1.0. April 4, 2022. </Text>
+                <View style={{justifyContent: 'flex-end', marginTop: 25, marginHorizontal: 5}}>
+                    <Text style={{textAlign: "center", marginTop: 5}}>Version: Pre-release Beta 1.0. April 5, 2022. </Text>
                     <Text style={styles.quote}>{"\n"}
                         "Some people are enraged, and some people are applauding. If there were a mission statement for graffiti, that would be it." {"\n"} ~Barry Mcgee
-                        {/* "Imagine... a city where everybody could draw whatever they liked. Where every street was awash with a million colours and little phrases.
+                        {/* "Imagine... a city where everybofdy could draw whatever they liked. Where every street was awash with a million colours and little phrases.
                         Where standing at a bus stop was never boring. A city that felt like a party where everyone was invited, not just the estate agents
                         and barons of big business. Imagine a city like that and stop leaning against the wall - it's wet." {"\n"}-Banksy */}
                     </Text>   
@@ -158,6 +159,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#F5FCFF',
         borderRadius: 35,
         overflow: 'hidden',
+        marginHorizontal: '10%'
     },
     active: {
         backgroundColor: '#F5FCFF',

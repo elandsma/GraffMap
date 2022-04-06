@@ -18,9 +18,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "infoPlist":{
-        
-      }
+      "infoPlist": {}
     },
     "android": {
       "adaptiveIcon": {
@@ -32,5 +30,6 @@
       "favicon": "./assets/favicon.png"
     },
     "description": "Graff Map enables viewing of user-added snapshots of street art encountered in the wild.",
+    "githubUrl": "https://github.com/elandsma/graffmap"
   }
 }
