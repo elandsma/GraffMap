@@ -10,6 +10,7 @@ import { SUPABASE_URL } from "react-native-dotenv"
 import UploadingModal from '../components/UploadingModal';
 import Tags from "react-native-tags";
 import { StackActions } from '@react-navigation/native';
+import * as ImageManipulator from 'expo-image-manipulator';
 
 
 let camera = Camera
@@ -27,8 +28,6 @@ const AddImageScreen = ( { navigation } )=>{
     const [uploadWasSuccess, setUploadWasSuccess] = useState(null);
     const [addArtworkResultDisplay, setAddArtworkResultDisplay] = useState(null);
     const [dbInsertResult, setDbInsertResult] = useState(null); 
-
-    // const [uploadedUuid, setUploadedUuid] = useState(null);
 
     const __startCamera = async () => {
         const {status} = await Camera.requestCameraPermissionsAsync()
@@ -148,6 +147,32 @@ const AddImageScreen = ( { navigation } )=>{
             if (uploadResult.error) {
                 throw new Error(uploadResult.error.message);  //if supabase error, throw new exception.
             }
+
+            //make thumbnail
+            const thumb = await ImageManipulator.manipulateAsync(
+                photo.uri,
+                [],
+                { compress: .25}
+             );
+            //upload thumbnail with ".thumb.jpg" extension
+            var formData = new FormData();
+            let thumbFilename = fileName.concat(".thumb.jpg");
+            console.log(thumbFilename);
+            formData.append("files", {
+                uri: thumb.uri,
+                name: thumbFilename,
+                type: photo.type ? 'image/${ext}' : 'video/${ext}',
+            })
+            //upload thumbnail to bucket
+            const thumbUploadResult = await supabase.storage
+                    .from("graffimages")
+                    .upload(thumbFilename, formData);
+                if (thumbUploadResult.error) {
+                    console.log("thumbnail upload err");
+                    throw new Error(thumbUploadResult.error.message);  //if supabase error, throw new exception.
+                }
+
+
             //return original photo, and supabase image data
             console.log("Image Upload Successful: ")
             console.log(uploadResult.data)

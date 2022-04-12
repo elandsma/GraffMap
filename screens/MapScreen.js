@@ -4,6 +4,8 @@ import { Platform, Button, Image, Alert, StyleSheet, Text, View, TouchableOpacit
 import * as Location from 'expo-location'
 import { supabase } from "../supabase-service";
 import { SUPABASE_URL } from "react-native-dotenv"
+import * as ImageManipulator from 'expo-image-manipulator';
+
 
 const MapScreen = ( { route, navigation } )=>{
     const [location, setLocation] = useState(null);
@@ -36,6 +38,37 @@ const MapScreen = ( { route, navigation } )=>{
             let myMap = new Map();
             let piecesPerLocation = new Map();
             for ( const artwork of data ){
+
+            //     //
+
+            // //make thumbnail
+            // let thumb = await ImageManipulator.manipulateAsync(
+            //     SUPABASE_URL +"/storage/v1/object/public/"+artwork.uri,
+            //     [{ resize: {width: 340} }],
+            //     { compress: .4}
+            //  );
+            // //upload thumbnail with ".thumb.jpg" extension
+            // var formData = new FormData();
+            // let fileName = artwork.uri.slice(12);
+            // let thumbFilename = fileName.concat(".thumb.jpg");
+            // console.log(thumbFilename);
+            // formData.append("files", {
+            //     uri: thumb.uri,
+            //     name: thumbFilename,
+            //     type: 'image/${ext}',
+            // })
+            // //upload thumbnail to bucket
+            // const thumbUploadResult = await supabase.storage
+            //         .from("graffimages")
+            //         .upload(thumbFilename, formData);
+            //     if (thumbUploadResult.error) {
+            //         console.log("thumbnail upload err");
+            //         throw new Error(thumbUploadResult.error.message);  //if supabase error, throw new exception.
+            //     }
+
+
+            //     //
+
                 if(!myMap.has(artwork.lat)){
                     const arr = [artwork.long];
                     myMap.set(artwork.lat, arr);
@@ -148,7 +181,7 @@ const MapScreen = ( { route, navigation } )=>{
                     // console.log("Placing marker at: ", latlong)
                     let prev = piecesPerLoc.get(latlong);
                     // console.log("Pieces here: ", prev);
-                    let imageurl = SUPABASE_URL +"/storage/v1/object/public/"+marker.uri
+                    let imageurl = SUPABASE_URL +"/storage/v1/object/public/"+marker.uri+".thumb.jpg"
                     // console.log(imageurl)
                     let msg = "View Detail ("
                     msg = msg.concat(prev).concat(')');
