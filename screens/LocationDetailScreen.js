@@ -14,6 +14,7 @@ const LocationDetailScreen = ( {route, navigation })=>{
     const [artworks, setArtworks] = useState(null);
     const [dbError, setdbError] = useState(false);
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [loading, setLoading] = useState(false);
 
     const onViewRef = useRef(({changed})=>{
         if(changed[0].isViewable){
@@ -62,6 +63,14 @@ const LocationDetailScreen = ( {route, navigation })=>{
                 i++;
             }
             console.log(cleanedData);
+            
+            const fetched = cleanedData.map(art=>
+                Image.prefetch(art.uri)
+                .finally(()=>{
+                    return art;
+                })                
+            )
+            const arts = await Promise.all(fetched);
             setArtworks(cleanedData);
         }
         catch (e){
@@ -86,26 +95,74 @@ const LocationDetailScreen = ( {route, navigation })=>{
                                 scrollEnabled={true} minimumZoomScale={1} showsHorizontalScrollIndicator={false} 
                                 showsVerticalScrollIndicator={false}
                             >
-                                <Image 
-                                    source={{uri: item.uri}}
-                                    style={{
-                                        maxWidth: width,
-                                        height: height,
-                                        marginTop: 10,
-                                        aspectRatio: 1,
-                                        resizeMode: 'contain',
-                                        // marginVertical: 10,
-                                        alignSelf: 'center'
-                                    }}
-                                /> 
+                                <>
+                                    <View
+                                        style={{
+                                            position: "absolute",
+                                            top: 0,
+                                            left: 0,
+                                            right: 0,
+                                            bottom: 0,
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                        }}
+                                    >
+                                        <ActivityIndicator 
+                                            size="large" 
+                                            color='#5d8aa6'
+                                            style={{
+                                                display: (loading? 'flex':'none'),
+                                                alignItems: 'center'
+                                            }}
+                                        />
+                                    </View>                            
+                                    <Image 
+                                        source={{uri: item.uri}}
+                                        style={{
+                                            maxWidth: width,
+                                            height: height,
+                                            marginTop: 10,
+                                            aspectRatio: 1,
+                                            resizeMode: 'contain',
+                                            // marginVertical: 10,
+                                            alignSelf: 'center',
+                                        }}
+                                        onLoadStart={()=>setLoading(true)}
+                                        onLoadEnd={()=>setLoading(false)}
+                                    /> 
+                                </>
                             </ScrollView>
                         )
                     }}
-                >                      
+                > 
+                <> 
+                    <View
+                        style={{
+                            position: "absolute",
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            justifyContent: "center",
+                            alignItems: "center",
+                        }}
+                     >
+                        <ActivityIndicator 
+                            size="large" 
+                            color='#5d8aa6'
+                            style={{
+                                display: (loading? 'flex':'none'),
+                                alignItems: 'center'
+                            }}
+                        />
+                    </View>  
                     <Image 
                         source={{uri: item.uri}}
                         style={styles.artworkImage}
-                    />                    
+                        onLoadStart={()=>setLoading(true)}
+                        onLoadEnd={()=>setLoading(false)}
+                    /> 
+                </>                                                   
                 </Lightbox>
                 </View>
                 <View style={styles.imageFooter}>
@@ -177,9 +234,9 @@ const LocationDetailScreen = ( {route, navigation })=>{
             </View>                
             :
             <>
-                <View style={styles.container}>
-                    <Text>Fetching Artwork...{"\n"}{"\n"}</Text>
-                    <ActivityIndicator size="large" color="white"/>
+                <View style={styles.spinner}>
+                    <Text style={{color: '#5d8aa6'}}>Fetching Artwork...{"\n"}{"\n"}</Text>
+                    <ActivityIndicator size="large" color='#5d8aa6'/>
                 </View>
             </>
         }
@@ -198,6 +255,16 @@ const styles = StyleSheet.create({
         backgroundColor: 'black',
         flexDirection: "column"
 
+    },
+    spinner:{
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+        alignItems: 'center',
+        // backgroundColor: '#F5FCFF'
+        backgroundColor: 'black',
+        flexDirection: "column"
+ 
     },
     artworkImage:{
         // marginTop: 5,
