@@ -38,37 +38,7 @@ const MapScreen = ( { route, navigation } )=>{
             let myMap = new Map();
             let piecesPerLocation = new Map();
             for ( const artwork of data ){
-
-            //     //
-
-            // //make thumbnail
-            // let thumb = await ImageManipulator.manipulateAsync(
-            //     SUPABASE_URL +"/storage/v1/object/public/"+artwork.uri,
-            //     [{ resize: {width: 340} }],
-            //     { compress: .4}
-            //  );
-            // //upload thumbnail with ".thumb.jpg" extension
-            // var formData = new FormData();
-            // let fileName = artwork.uri.slice(12);
-            // let thumbFilename = fileName.concat(".thumb.jpg");
-            // console.log(thumbFilename);
-            // formData.append("files", {
-            //     uri: thumb.uri,
-            //     name: thumbFilename,
-            //     type: 'image/${ext}',
-            // })
-            // //upload thumbnail to bucket
-            // const thumbUploadResult = await supabase.storage
-            //         .from("graffimages")
-            //         .upload(thumbFilename, formData);
-            //     if (thumbUploadResult.error) {
-            //         console.log("thumbnail upload err");
-            //         throw new Error(thumbUploadResult.error.message);  //if supabase error, throw new exception.
-            //     }
-
-
-            //     //
-
+                //mapping by unique lat/long combo
                 if(!myMap.has(artwork.lat)){
                     const arr = [artwork.long];
                     myMap.set(artwork.lat, arr);
