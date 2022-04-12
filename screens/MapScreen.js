@@ -14,6 +14,8 @@ const MapScreen = ( { route, navigation } )=>{
     const [artworkdata, setArtworkdata] = useState([]);
     const [piecesPerLoc, setPiecesPerLoc] = useState(new Map());
 
+    const { height, width } = Dimensions.get( 'window' );
+
     useEffect(()=>{
         const doStates = async() => {
             await fetchMarkers();
@@ -81,11 +83,12 @@ const MapScreen = ( { route, navigation } )=>{
     async function getInitialLocation(){
             if(route.params){
                 console.log("has route")
+                let longdelt = .28*(width/height); 
                     setInitialMapLocation({
                         latitude: Number(route.params.showlat),
                         longitude: Number(route.params.showlong),
-                        latitudeDelta: 0.0922,
-                        longitudeDelta: 0.0421, 
+                        latitudeDelta: .003,
+                        longitudeDelta: .003, 
                     })
                 return;
             }
